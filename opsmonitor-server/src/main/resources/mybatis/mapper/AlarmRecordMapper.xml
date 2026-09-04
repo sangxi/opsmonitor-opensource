@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.opsmonitor.mapper.AlarmRecordMapper">
+	<resultMap id="resultMap" type="com.opsmonitor.entity.AlarmRecord">
+		<id column="ID" property="id" jdbcType="CHAR" />
+		<result column="ALARM_TYPE" property="alarmType" jdbcType="CHAR" />
+		<result column="HOSTNAME" property="hostname" jdbcType="CHAR" />
+		<result column="TITLE" property="title" jdbcType="CHAR" />
+		<result column="CONTENT" property="content" jdbcType="CHAR" />
+		<result column="LEVEL" property="level" jdbcType="CHAR" />
+		<result column="STATE" property="state" jdbcType="CHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="tableColumnList">
+		ID,ALARM_TYPE, HOSTNAME, TITLE, CONTENT, LEVEL, STATE,CREATE_TIME,UPDATE_TIME
+	</sql>
+
+	<sql id="queryByParams">
+		<if test="alarmType != null and alarmType != ''">
+			<![CDATA[ AND ALARM_TYPE = #{alarmType}]]>
+		</if>
+		<if test="state != null and state != ''">
+			<![CDATA[ AND STATE = #{state}]]>
+		</if>
+		<if test="level != null and level != ''">
+			<![CDATA[ AND LEVEL = #{level}]]>
+		</if>
+		<if test="hostname != null and hostname != ''">
+			<![CDATA[ AND HOSTNAME LIKE  CONCAT('%',#{hostname},'%')]]>
+		</if>
+		<if test="title != null and title != ''">
+			<![CDATA[ AND (TITLE LIKE  CONCAT('%',#{title},'%') OR CONTENT LIKE CONCAT('%',#{title},'%'))]]>
+		</if>
+		<if test="startTime != null and endTime !=null and startTime !='' and endTime != '' ">
+			<![CDATA[ AND CREATE_TIME >= #{startTime} and CREATE_TIME <=#{endTime}]]>
+		</if>
+	</sql>
+
+	<select id="selectById" resultMap="resultMap" parameterType="java.lang.String">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM ALARM_RECORD WHERE ID=#{id}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		DELETE FROM ALARM_RECORD WHERE ID = #{id}
+	</delete>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM ALARM_RECORD WHERE ID IN
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<insert id="save" parameterType="com.opsmonitor.entity.AlarmRecord">
+		INSERT INTO ALARM_RECORD
+    	<trim prefix="(" suffix=")" suffixOverrides="," >
+      		<if test="id != null" >ID,</if>
+      		<if test="alarmType != null" >ALARM_TYPE,</if>
+      		<if test="hostname != null" >HOSTNAME,</if>
+      		<if test="title != null" >TITLE,</if>
+      		<if test="content != null" >CONTENT,</if>
+      		<if test="level != null" >LEVEL,</if>
+      		<if test="state != null" >STATE,</if>
+      		<if test="createTime != null" >CREATE_TIME,</if>
+      		<if test="updateTime != null" >UPDATE_TIME</if>
+    	</trim>
+    	<trim prefix="values (" suffix=")" suffixOverrides="," >
+      		<if test="id != null" >#{id},</if>
+      		<if test="alarmType != null" >#{alarmType},</if>
+      		<if test="hostname != null" >#{hostname},</if>
+      		<if test="title != null" >#{title},</if>
+      		<if test="content != null" >#{content},</if>
+      		<if test="level != null" >#{level},</if>
+      		<if test="state != null" >#{state},</if>
+      		<if test="createTime != null" >#{createTime},</if>
+      		<if test="updateTime != null" >#{updateTime}</if>
+    	</trim>
+	</insert>
+
+	<update id="updateById" parameterType="com.opsmonitor.entity.AlarmRecord">
+		UPDATE ALARM_RECORD
+		<set>
+			<if test="alarmType != null">ALARM_TYPE=#{alarmType},</if>
+			<if test="hostname != null">HOSTNAME=#{hostname},</if>
+			<if test="title != null">TITLE=#{title},</if>
+			<if test="content != null">CONTENT=#{content},</if>
+			<if test="level != null">LEVEL=#{level},</if>
+			<if test="state != null">STATE=#{state},</if>
+			<if test="updateTime != null">UPDATE_TIME=#{updateTime}</if>
+		</set>
+		WHERE ID=#{id}
+	</update>
+
+	<update id="updateState" parameterType="com.opsmonitor.entity.AlarmRecord">
+		UPDATE ALARM_RECORD SET STATE=#{state}, UPDATE_TIME=NOW() WHERE ID=#{id}
+	</update>
+
+	<select id="countByParams" parameterType="map" resultType="java.lang.Integer">
+		SELECT count(*)  FROM ALARM_RECORD t
+		<where>
+			<include refid="queryByParams" />
+		</where>
+	</select>
+
+	<select id="selectAllByParams" parameterType="map" resultMap="resultMap">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM ALARM_RECORD t
+		<where>
+			<include refid="queryByParams" />
+		</where>
+		 ORDER BY CREATE_TIME DESC
+	</select>
+
+	<select id="selectByParams" parameterType="map" resultMap="resultMap">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM ALARM_RECORD
+		<where>
+			<include refid="queryByParams" />
+		</where>
+		 ORDER BY CREATE_TIME DESC
+	</select>
+
+	<select id="countGroupByState" parameterType="map" resultType="java.util.Map">
+		SELECT STATE, COUNT(*) AS CNT FROM ALARM_RECORD GROUP BY STATE
+	</select>
+</mapper>

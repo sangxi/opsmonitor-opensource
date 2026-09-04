@@ -1,0 +1,204 @@
+package com.opsmonitor.filter;
+
+
+import com.opsmonitor.config.CommonConfig;
+import com.opsmonitor.entity.AccountInfo;
+import com.opsmonitor.util.staticvar.StaticKeys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+
+/**
+ * @version v2.3
+ * @ClassName:AuthRestFilter.java
+ * @author: OpsMonitor Team
+ * @date: 2019年11月16日
+ * @Description: http请求过滤器，拦截不是从路由过来的请求
+ * @Copyright: 2017-2026 OpsMonitor. All rights reserved.
+ */
+@WebFilter(filterName = "authRestFilter", urlPatterns = {"/*"})
+public class AuthRestFilter implements Filter {
+
+    static Logger log = LoggerFactory.getLogger(AuthRestFilter.class);
+
+    @Autowired
+    CommonConfig commonConfig;
+
+    String[] static_resource = {"/agent/minTask", "/login/toLogin", "/login/login", "/appInfo/agentList", "/static/", "/code/generate"};
+
+    String[] dash_views = {"/dash/main", "/dash/systemInfoList", "/dash/detail", "/dash/chart"};
+
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        final HttpServletResponse response = (HttpServletResponse) servletResponse;
+        final HttpServletRequest request = (HttpServletRequest) servletRequest;
+        final HttpSession session = request.getSession();
+        AccountInfo accountInfo = (AccountInfo) session.getAttribute(StaticKeys.LOGIN_KEY);
+        String uri = request.getRequestURI();
+        log.debug("uri----" + uri);
+        String servletPath = request.getServletPath();
+        log.debug("servletPath----" + servletPath);
+        menuActive(session, uri);
+        for (String ss : static_resource) {
+            if (servletPath.startsWith(ss)) {
+                filterChain.doFilter(servletRequest, servletResponse);
+                return;
+            }
+        }
+        if (accountInfo == null) {
+            for (String ss : dash_views) {
+                if (servletPath.startsWith(ss) && "true".equals(commonConfig.getDashView()) && request.getParameter(StaticKeys.DASH_VIEW_ACCOUNT) != null) {
+                    filterChain.doFilter(servletRequest, servletResponse);
+                    return;
+                }
+            }
+        }
+        if (accountInfo == null) {
+            response.sendRedirect("/opsmonitor/login/toLogin");
+            return;
+        }
+        
+        // 基于角色的访问控制
+        if (!hasPermission(accountInfo.getRole(), servletPath)) {
+            response.sendRedirect("/opsmonitor/dash/main");
+            return;
+        }
+        
+        filterChain.doFilter(servletRequest, servletResponse);
+    }
+    
+    /**
+     * 检查用户角色是否有权限访问资源
+     * @param role 用户角色
+     * @param servletPath 请求路径
+     * @return 是否有权限
+     */
+    private boolean hasPermission(String role, String servletPath) {
+        // 管理员拥有所有权限
+        if ("admin".equals(role)) {
+            return true;
+        }
+        
+        // 普通用户权限
+        if ("user".equals(role)) {
+            // 允许访问的路径
+            String[] allowedPaths = {
+                "/dash/main", "/dash/systemInfoList", "/dash/detail", "/dash/chart",
+                "/host/list", "/host/view", "/host/viewChart",
+                "/appInfo/list", "/appInfo/view",
+                "/log/list", "/log/view",
+                "/alarm/list", "/alarm/detail", "/alarm/unhandledCount",
+                "/audit/list", "/audit/export",
+                "/export/hosts", "/export/alarms",
+                "/report/list", "/report/detail"
+            };
+            
+            for (String path : allowedPaths) {
+                if (servletPath.startsWith(path)) {
+                    return true;
+                }
+            }
+            
+            // 禁止访问的路径
+            String[] forbiddenPaths = {
+                "/dbInfo", "/dbTable", "/mailset", "/heathMonitor",
+                "/alarm/handle", "/alarm/handleAll", "/alarm/del",
+                "/apiToken", "/audit/clear"
+            };
+            
+            for (String path : forbiddenPaths) {
+                if (servletPath.startsWith(path)) {
+                    return false;
+                }
+            }
+        }
+        
+        // 测试用户权限
+        if ("test".equals(role)) {
+            // 允许访问的路径
+            String[] allowedPaths = {
+                "/dash/main", "/dash/systemInfoList",
+                "/alarm/list", "/alarm/detail", "/alarm/unhandledCount"
+            };
+            
+            for (String path : allowedPaths) {
+                if (servletPath.startsWith(path)) {
+                    return true;
+                }
+            }
+        }
+        
+        // 默认拒绝
+        return false;
+    }
+
+
+    /**
+     * 添加菜单标识
+     *
+     * @param session
+     * @param uri
+     */
+    public void menuActive(HttpSession session, String uri) {
+        if (uri.indexOf("/log/") > -1) {
+            session.setAttribute("menuActive", "21");
+            return;
+        }
+        if (uri.indexOf("/dash/main") > -1) {
+            session.setAttribute("menuActive", "11");
+            return;
+        }
+        if (uri.indexOf("/dash/systemInfoList") > -1 || uri.indexOf("/dash/detail") > -1 || uri.indexOf("/dash/chart") > -1) {
+            session.setAttribute("menuActive", "12");
+            return;
+        }
+        if (uri.indexOf("/appInfo") > -1) {
+            session.setAttribute("menuActive", "13");
+            return;
+        }
+        if (uri.indexOf("/mailset") > -1) {
+            session.setAttribute("menuActive", "31");
+            return;
+        }
+        if (uri.indexOf("/dbInfo") > -1) {
+            session.setAttribute("menuActive", "41");
+            return;
+        }
+        if (uri.indexOf("/dbTable") > -1) {
+            session.setAttribute("menuActive", "42");
+            return;
+        }
+        if (uri.indexOf("/heathMonitor") > -1) {
+            session.setAttribute("menuActive", "51");
+            return;
+        }
+        if (uri.indexOf("/alarm") > -1 || uri.indexOf("/export/alarms") > -1) {
+            session.setAttribute("menuActive", "81");
+            return;
+        }
+        if (uri.indexOf("/audit") > -1) {
+            session.setAttribute("menuActive", "91");
+            return;
+        }
+        if (uri.indexOf("/apiToken") > -1 || uri.indexOf("/export/hosts") > -1) {
+            session.setAttribute("menuActive", "92");
+            return;
+        }
+        if (uri.indexOf("/report") > -1) {
+            session.setAttribute("menuActive", "101");
+            return;
+        }
+        session.setAttribute("menuActive", "11");
+        return;
+
+    }
+
+}

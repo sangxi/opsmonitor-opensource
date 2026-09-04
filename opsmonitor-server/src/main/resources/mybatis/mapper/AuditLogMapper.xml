@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.opsmonitor.mapper.AuditLogMapper">
+	<resultMap id="resultMap" type="com.opsmonitor.entity.AuditLog">
+		<id column="ID" property="id" jdbcType="CHAR" />
+		<result column="ACCOUNT" property="account" jdbcType="CHAR" />
+		<result column="ACTION" property="action" jdbcType="CHAR" />
+		<result column="CONTENT" property="content" jdbcType="CHAR" />
+		<result column="IP" property="ip" jdbcType="CHAR" />
+		<result column="RESULT" property="result" jdbcType="CHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="tableColumnList">
+		ID,ACCOUNT, ACTION, CONTENT, IP, RESULT,CREATE_TIME
+	</sql>
+
+	<sql id="queryByParams">
+		<if test="action != null and action != ''">
+			<![CDATA[ AND ACTION = #{action}]]>
+		</if>
+		<if test="account != null and account != ''">
+			<![CDATA[ AND ACCOUNT LIKE  CONCAT('%',#{account},'%')]]>
+		</if>
+		<if test="content != null and content != ''">
+			<![CDATA[ AND CONTENT LIKE  CONCAT('%',#{content},'%')]]>
+		</if>
+		<if test="startTime != null and endTime !=null and startTime !='' and endTime != '' ">
+			<![CDATA[ AND CREATE_TIME >= #{startTime} and CREATE_TIME <=#{endTime}]]>
+		</if>
+	</sql>
+
+	<select id="selectById" resultMap="resultMap" parameterType="java.lang.String">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM AUDIT_LOG WHERE ID=#{id}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		DELETE FROM AUDIT_LOG WHERE ID = #{id}
+	</delete>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM AUDIT_LOG WHERE ID IN
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<insert id="save" parameterType="com.opsmonitor.entity.AuditLog">
+		INSERT INTO AUDIT_LOG
+    	<trim prefix="(" suffix=")" suffixOverrides="," >
+      		<if test="id != null" >ID,</if>
+      		<if test="account != null" >ACCOUNT,</if>
+      		<if test="action != null" >ACTION,</if>
+      		<if test="content != null" >CONTENT,</if>
+      		<if test="ip != null" >IP,</if>
+      		<if test="result != null" >RESULT,</if>
+      		<if test="createTime != null" >CREATE_TIME</if>
+    	</trim>
+    	<trim prefix="values (" suffix=")" suffixOverrides="," >
+      		<if test="id != null" >#{id},</if>
+      		<if test="account != null" >#{account},</if>
+      		<if test="action != null" >#{action},</if>
+      		<if test="content != null" >#{content},</if>
+      		<if test="ip != null" >#{ip},</if>
+      		<if test="result != null" >#{result},</if>
+      		<if test="createTime != null" >#{createTime}</if>
+    	</trim>
+	</insert>
+
+	<select id="countByParams" parameterType="map" resultType="java.lang.Integer">
+		SELECT count(*)  FROM AUDIT_LOG t
+		<where>
+			<include refid="queryByParams" />
+		</where>
+	</select>
+
+	<select id="selectAllByParams" parameterType="map" resultMap="resultMap">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM AUDIT_LOG t
+		<where>
+			<include refid="queryByParams" />
+		</where>
+		 ORDER BY CREATE_TIME DESC
+	</select>
+
+	<select id="selectByParams" parameterType="map" resultMap="resultMap">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM AUDIT_LOG
+		<where>
+			<include refid="queryByParams" />
+		</where>
+		 ORDER BY CREATE_TIME DESC
+	</select>
+</mapper>

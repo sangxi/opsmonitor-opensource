@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <div  th:replace="common/header.html"></div>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div th:replace="common/chart.html"></div>
+
+<div class="wrapper">
+
+  <div th:replace="common/navbar.html"></div>
+
+  <div th:replace="common/aside.html"></div>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper" style="font-size: 0.9rem">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1></h1>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+
+          <!-- 报表配置面板 -->
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-cog"></i> 报表配置</h3>
+              </div>
+              <div class="card-body">
+                <form id="cfgForm">
+                  <div class="form-group">
+                    <label>定时报表开关</label>
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" id="reportEnable" th:checked="${reportEnable == '1'}">
+                      <label class="custom-control-label" for="reportEnable">启用每日/每周自动报表</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>每日发送时间（HH:mm）</label>
+                    <input type="time" class="form-control" id="reportTime" th:value="${reportTime}">
+                    <small class="text-muted">每周报表固定周一 08:40 发送</small>
+                  </div>
+                  <div class="form-group">
+                    <label>收件人（分号分隔）</label>
+                    <input type="text" class="form-control" id="reportMail" th:value="${reportMail}" placeholder="a@example.com;b@example.com">
+                    <small class="text-muted">留空则使用「邮件告警配置」中的收件人</small>
+                  </div>
+                  <button type="button" class="btn btn-primary" onclick="saveReportCfg()"><i class="fas fa-save"></i> 保存配置</button>
+                </form>
+                <hr>
+                <div class="form-group">
+                  <label>手动发送报表</label>
+                  <div class="btn-group btn-block">
+                    <button type="button" class="btn btn-info" onclick="sendReport('daily')"><i class="fas fa-paper-plane"></i> 发送日报</button>
+                    <button type="button" class="btn btn-warning" onclick="sendReport('weekly')"><i class="fas fa-paper-plane"></i> 发送周报</button>
+                  </div>
+                  <small class="text-muted">手动发送立即生成并发送，无需等待定时时间</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 报表记录列表 -->
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">报表发送记录</h3>
+              </div>
+              <div class="card-body">
+                <div class="row mb-2">
+                  <div class="col-md-12">
+                    <form class="form-inline" action="/opsmonitor/report/list" method="get">
+                      <select class="form-control form-control-sm mr-1" style="width:130px" name="reportType">
+                        <option value="">全部类型</option>
+                        <option value="daily" th:selected="${reportLog.reportType == 'daily'}">每日报表</option>
+                        <option value="weekly" th:selected="${reportLog.reportType == 'weekly'}">每周报表</option>
+                        <option value="manual" th:selected="${reportLog.reportType == 'manual'}">手动报表</option>
+                      </select>
+                      <select class="form-control form-control-sm mr-1" style="width:130px" name="sendStatus">
+                        <option value="">全部状态</option>
+                        <option value="1" th:selected="${reportLog.sendStatus == '1'}">已发送</option>
+                        <option value="0" th:selected="${reportLog.sendStatus == '0'}">未发送</option>
+                        <option value="2" th:selected="${reportLog.sendStatus == '2'}">发送失败</option>
+                      </select>
+                      <button type="submit" class="btn btn-sm btn-primary">筛选</button>
+                    </form>
+                  </div>
+                </div>
+                <table class="table table-bordered">
+                  <thead>
+                  <tr>
+                    <th style="width: 60px">序号</th>
+                    <th>标题</th>
+                    <th>类型</th>
+                    <th>收件人</th>
+                    <th>状态</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <th:block th:each="item,iterStat : ${page.list}">
+                    <tr>
+                      <td th:text="${iterStat.index+1}">1</td>
+                      <td th:text="${item.title}">报表标题</td>
+                      <td>
+                        <th:block th:if="${item.reportType == 'daily'}"><span class="badge bg-primary">日报</span></th:block>
+                        <th:block th:if="${item.reportType == 'weekly'}"><span class="badge bg-indigo">周报</span></th:block>
+                        <th:block th:if="${item.reportType == 'manual'}"><span class="badge bg-secondary">手动</span></th:block>
+                      </td>
+                      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" th:text="${item.receiver}">a@b.com</td>
+                      <td>
+                        <th:block th:if="${item.sendStatus == '1'}"><span class="badge bg-success">已发送</span></th:block>
+                        <th:block th:if="${item.sendStatus == '0'}"><span class="badge bg-secondary">未发送</span></th:block>
+                        <th:block th:if="${item.sendStatus == '2'}"><span class="badge bg-danger">发送失败</span></th:block>
+                      </td>
+                      <td th:text="${#dates.format(item.createTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+                      <td>
+                        <button type="button" class="btn btn-default btn-sm" th:onclick="preview([[${item.id}]])">预览</button>
+                        <button type="button" th:onclick="del([[${item.id}]])" class="btn bg-gradient-danger btn-sm">删除</button>
+                      </td>
+                    </tr>
+                  </th:block>
+                  <tr th:if="${#lists.isEmpty(page.list)}">
+                    <td colspan="7" align="center" class="text-muted">暂无报表记录</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div th:replace="common/page.html"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 报表预览弹窗 -->
+  <div class="modal fade" id="modal-report-view">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="reportViewTitle">报表预览</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="reportViewBody" style="max-height:70vh;overflow:auto;">
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:replace="common/footer.html"></div>
+
+</div>
+
+<script th:src="@{'/static/js/report.js'}"></script>
+
+</body>
+</html>

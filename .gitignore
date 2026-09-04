@@ -1,0 +1,29 @@
+# ---- Maven build output ----
+target/
+*.class
+
+# ---- Logs ----
+log/
+logs/
+*.log
+
+# ---- IDE ----
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+
+# ---- Local secrets / environment-specific config ----
+application-local.yml
+deploy/.env
+
+# ---- Node / frontend temp ----
+node_modules/

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.opsmonitor.mapper.HelpCategoryMapper">
+	<resultMap id="resultMap" type="com.opsmonitor.entity.HelpCategory">
+		<id column="ID" property="id" jdbcType="CHAR" />
+		<result column="NAME" property="name" jdbcType="CHAR" />
+		<result column="ICON" property="icon" jdbcType="CHAR" />
+		<result column="SORT_NUM" property="sortNum" jdbcType="INTEGER" />
+		<result column="STATUS" property="status" jdbcType="CHAR" />
+	</resultMap>
+
+	<select id="selectAllByParams" parameterType="map" resultMap="resultMap">
+		SELECT ID, NAME, ICON, SORT_NUM, STATUS
+		FROM HELP_CATEGORY
+		WHERE STATUS = '1'
+		ORDER BY SORT_NUM ASC
+	</select>
+
+	<select id="selectById" parameterType="java.lang.String" resultMap="resultMap">
+		SELECT ID, NAME, ICON, SORT_NUM, STATUS
+		FROM HELP_CATEGORY WHERE ID = #{id}
+	</select>
+
+	<insert id="save" parameterType="com.opsmonitor.entity.HelpCategory">
+		INSERT INTO HELP_CATEGORY (ID, NAME, ICON, SORT_NUM, STATUS)
+		VALUES (#{id}, #{name}, #{icon}, #{sortNum}, #{status})
+	</insert>
+
+	<update id="updateById" parameterType="com.opsmonitor.entity.HelpCategory">
+		UPDATE HELP_CATEGORY
+		<set>
+			<if test="name != null">NAME = #{name},</if>
+			<if test="icon != null">ICON = #{icon},</if>
+			<if test="sortNum != null">SORT_NUM = #{sortNum},</if>
+			<if test="status != null">STATUS = #{status}</if>
+		</set>
+		WHERE ID = #{id}
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM HELP_CATEGORY WHERE ID IN
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

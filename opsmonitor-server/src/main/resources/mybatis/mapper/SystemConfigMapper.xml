@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.opsmonitor.mapper.SystemConfigMapper">
+	<resultMap id="resultMap" type="com.opsmonitor.entity.SystemConfig">
+		<id column="ID" property="id" jdbcType="CHAR" />
+		<result column="CONFIG_KEY" property="configKey" jdbcType="VARCHAR" />
+		<result column="CONFIG_VALUE" property="configValue" jdbcType="VARCHAR" />
+		<result column="CONFIG_DESC" property="configDesc" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="tableColumnList">
+		ID, CONFIG_KEY, CONFIG_VALUE, CONFIG_DESC, CREATE_TIME
+	</sql>
+
+	<select id="selectAll" resultMap="resultMap">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM SYSTEM_CONFIG
+		ORDER BY ID
+	</select>
+
+	<select id="selectByConfigKey" resultMap="resultMap" parameterType="java.lang.String">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM SYSTEM_CONFIG
+		WHERE CONFIG_KEY = #{configKey}
+	</select>
+
+	<update id="updateById" parameterType="com.opsmonitor.entity.SystemConfig">
+		UPDATE SYSTEM_CONFIG
+		SET CONFIG_VALUE = #{configValue}
+		WHERE ID = #{id}
+	</update>
+
+</mapper>

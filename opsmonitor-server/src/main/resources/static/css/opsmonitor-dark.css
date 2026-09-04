@@ -1,0 +1,681 @@
+/* ==========================================================================
+   OpsMonitor 深色现代主题 v2 (基于 AdminLTE 3 覆盖)
+   仅作用于管理后台 body:not(.login-page)，不影响登录页(login-page)
+   配色：深蓝灰底 + 靛蓝/紫色强调，与登录页风格一致
+   视觉语言：微网格背景、毛玻璃卡片、渐变强调、呼吸灯状态、细腻阴影
+   ========================================================================== */
+
+/* ---------- CSS 变量 ---------- */
+body:not(.login-page) {
+    --ops-bg: #0b1020;
+    --ops-bg-2: #121a2e;
+    --ops-panel: #171f38;
+    --ops-panel-2: #1f2a4a;
+    --ops-border: #263155;
+    --ops-border-light: #2f3b63;
+    --ops-text: #e2e8f5;
+    --ops-text-dim: #94a0bd;
+    --ops-primary: #6366f1;
+    --ops-primary-2: #8b5cf6;
+    --ops-info: #38bdf8;
+    --ops-success: #22c55e;
+    --ops-warning: #f59e0b;
+    --ops-danger: #ef4444;
+    --ops-cyan: #22d3ee;
+    --ops-sidebar-bg: #0d1326;
+    --ops-sidebar-active: linear-gradient(90deg, rgba(99,102,241,.30), rgba(99,102,241,.04));
+    --ops-glow-primary: 0 8px 30px rgba(99,102,241,.25);
+}
+
+/* ---------- 全局底色 / 文字 ---------- */
+body:not(.login-page),
+body:not(.login-page).content-wrapper-bg {
+    background-color: var(--ops-bg) !important;
+    color: var(--ops-text);
+    background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(99,102,241,.10) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(139,92,246,.06) 0%, transparent 55%);
+    background-attachment: fixed;
+}
+
+body:not(.login-page) .wrapper {
+    background-color: transparent;
+}
+
+/* 内容区 */
+body:not(.login-page) .content-wrapper,
+body:not(.login-page) .content {
+    background-color: transparent !important;
+    color: var(--ops-text);
+}
+
+/* 内容区微妙网格纹理 */
+body:not(.login-page) .content-wrapper::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+    z-index: 0;
+}
+body:not(.login-page) .content-wrapper > * { position: relative; z-index: 1; }
+
+body:not(.login-page) .content-header h1,
+body:not(.login-page) .content-header .h1,
+body:not(.login-page) h1, body:not(.login-page) h2,
+body:not(.login-page) h3, body:not(.login-page) h4,
+body:not(.login-page) h5, body:not(.login-page) h6,
+body:not(.login-page) label,
+body:not(.login-page) p,
+body:not(.login-page) td, body:not(.login-page) th,
+body:not(.login-page) span, body:not(.login-page) a {
+    color: var(--ops-text);
+}
+
+body:not(.login-page) .text-muted,
+body:not(.login-page) .small-box .inner p {
+    color: var(--ops-text-dim) !important;
+}
+
+/* ---------- 侧边栏 ---------- */
+body:not(.login-page) .main-sidebar,
+body:not(.login-page) .main-sidebar.sidebar-dark-primary,
+body:not(.login-page) .sidebar {
+    background: linear-gradient(180deg, #10172c 0%, #0b1020 100%) !important;
+    border-right: 1px solid var(--ops-border);
+    box-shadow: 4px 0 24px rgba(2,6,23,.4);
+}
+
+/* Logo 区 */
+body:not(.login-page) .brand-link {
+    background: linear-gradient(90deg, rgba(99,102,241,.16), rgba(139,92,246,.05)) !important;
+    border-bottom: 1px solid var(--ops-border);
+    padding: 1rem 1rem;
+}
+body:not(.login-page) .brand-link .brand-text {
+    color: #fff !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px;
+    font-size: 1.05rem;
+    text-shadow: 0 2px 12px rgba(99,102,241,.45);
+}
+body:not(.login-page) .brand-link .brand-image {
+    opacity: 1 !important;
+    border-radius: 10px;
+    box-shadow: 0 0 14px rgba(99,102,241,.55);
+}
+
+/* 菜单项 */
+body:not(.login-page) .nav-sidebar .nav-link,
+body:not(.login-page) .sidebar .nav-link {
+    color: #b7c0d6 !important;
+    border-radius: 10px;
+    margin: 2px 8px;
+    padding: .55rem .8rem;
+    transition: all .18s ease;
+}
+body:not(.login-page) .nav-sidebar .nav-link:hover,
+body:not(.login-page) .sidebar .nav-link:hover {
+    background: rgba(99,102,241,.14) !important;
+    color: #fff !important;
+    transform: translateX(2px);
+}
+body:not(.login-page) .nav-sidebar .nav-link.active,
+body:not(.login-page) .nav-sidebar .has-treeview.menu-open > .nav-link {
+    background: var(--ops-sidebar-active) !important;
+    color: #fff !important;
+    box-shadow: inset 3px 0 0 var(--ops-primary), 0 4px 18px rgba(99,102,241,.18);
+}
+body:not(.login-page) .nav-treeview > .nav-item > .nav-link {
+    padding-left: 2.2rem;
+    color: #93a0bd !important;
+    margin: 1px 8px;
+}
+body:not(.login-page) .nav-treeview > .nav-item > .nav-link.active {
+    color: #fff !important;
+}
+body:not(.login-page) .nav-icon,
+body:not(.login-page) .nav-treeview .nav-icon {
+    color: inherit;
+}
+body:not(.login-page) .nav-sidebar .nav-link.active .nav-icon {
+    color: #a5b4fc !important;
+}
+
+/* 侧边栏分组标题 */
+body:not(.login-page) .sidebar .nav-group-title,
+body:not(.login-page) .ops-group-title {
+    display: block;
+    color: var(--ops-text-dim) !important;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 14px 16px 4px;
+    text-transform: uppercase;
+    border-top: 1px solid rgba(255,255,255,.04);
+    margin-top: 6px;
+}
+body:not(.login-page) .ops-group-title i { color: var(--ops-primary-2); margin-right: 4px; }
+
+/* ---------- 顶栏 ---------- */
+body:not(.login-page) .main-header.navbar,
+body:not(.login-page) .navbar-white.navbar-light {
+    background: rgba(18,26,46,.85) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--ops-border);
+}
+body:not(.login-page) .main-header .nav-link {
+    color: var(--ops-text) !important;
+}
+body:not(.login-page) .main-header .nav-link:hover {
+    color: #fff !important;
+}
+body:not(.login-page) .main-header .navbar-nav .nav-link i {
+    font-size: 1.1rem;
+}
+
+/* 顶栏搜索框 */
+body:not(.login-page) .navbar .form-control-navbar {
+    background: rgba(11,16,32,.7) !important;
+    border: 1px solid var(--ops-border) !important;
+    border-radius: 20px !important;
+    color: var(--ops-text) !important;
+}
+body:not(.login-page) .navbar .form-control-navbar:focus {
+    border-color: var(--ops-primary) !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,.18) !important;
+}
+
+/* 通知铃铛角标 */
+body:not(.login-page) .navbar-badge {
+    background: linear-gradient(135deg, var(--ops-danger), #f97316) !important;
+    border-radius: 10px !important;
+    font-size: 10px !important;
+    border: 2px solid var(--ops-bg-2);
+}
+
+/* ---------- 页脚 ---------- */
+body:not(.login-page) .main-footer {
+    background: var(--ops-bg-2) !important;
+    border-top: 1px solid var(--ops-border);
+    color: var(--ops-text-dim);
+}
+body:not(.login-page) .main-footer strong { color: var(--ops-text); }
+
+/* 控制侧边栏（右侧） */
+body:not(.login-page) .control-sidebar {
+    background: var(--ops-panel) !important;
+}
+
+/* ==========================================================================
+   卡片 Card（毛玻璃质感）
+   ========================================================================== */
+body:not(.login-page) .card {
+    background: linear-gradient(180deg, rgba(31,42,74,.72), rgba(23,31,56,.85)) !important;
+    border: 1px solid var(--ops-border) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 10px 32px rgba(2,6,23,.4) !important;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+body:not(.login-page) .card:hover {
+    border-color: var(--ops-border-light) !important;
+    box-shadow: 0 14px 40px rgba(2,6,23,.5) !important;
+}
+body:not(.login-page) .card .card-header {
+    background: linear-gradient(180deg, rgba(42,55,95,.5), rgba(31,42,74,.2)) !important;
+    border-bottom: 1px solid var(--ops-border) !important;
+    border-top-left-radius: 14px !important;
+    border-top-right-radius: 14px !important;
+    color: #fff !important;
+    padding: .9rem 1.1rem;
+}
+body:not(.login-page) .card .card-title {
+    color: #fff !important;
+    font-weight: 600;
+    font-size: .95rem;
+}
+body:not(.login-page) .card.card-outline.card-primary {
+    border-top: 3px solid var(--ops-primary) !important;
+}
+body:not(.login-page) .card.card-outline.card-success {
+    border-top: 3px solid var(--ops-success) !important;
+}
+body:not(.login-page) .card.card-outline.card-warning {
+    border-top: 3px solid var(--ops-warning) !important;
+}
+body:not(.login-page) .card.card-outline.card-danger {
+    border-top: 3px solid var(--ops-danger) !important;
+}
+body:not(.login-page) .card-footer {
+    background: rgba(31,42,74,.4) !important;
+    border-top: 1px solid var(--ops-border) !important;
+    border-bottom-left-radius: 14px !important;
+    border-bottom-right-radius: 14px !important;
+}
+
+/* ==========================================================================
+   表格 Table
+   ========================================================================== */
+body:not(.login-page) .table,
+body:not(.login-page) .table.table-hover {
+    color: var(--ops-text) !important;
+    background-color: transparent;
+}
+body:not(.login-page) .table thead th {
+    background: linear-gradient(180deg, rgba(42,55,95,.55), rgba(31,42,74,.35)) !important;
+    color: #fff !important;
+    border-bottom: 1px solid var(--ops-border) !important;
+    font-weight: 600;
+    letter-spacing: .3px;
+}
+body:not(.login-page) .table td,
+body:not(.login-page) .table th {
+    border-top: 1px solid var(--ops-border) !important;
+    vertical-align: middle;
+    padding: .6rem .75rem;
+}
+body:not(.login-page) .table-hover tbody tr:hover {
+    background-color: rgba(99,102,241,.10) !important;
+    color: #fff;
+}
+body:not(.login-page) .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255,255,255,.02) !important;
+}
+
+/* 卡片内的表格容器 */
+body:not(.login-page) .card-body { background: transparent; }
+
+/* ==========================================================================
+   表单 Form controls
+   ========================================================================== */
+body:not(.login-page) .form-control,
+body:not(.login-page) .form-control:read-write,
+body:not(.login-page) .input-group-text,
+body:not(.login-page) select,
+body:not(.login-page) textarea {
+    background-color: rgba(11,16,32,.6) !important;
+    border: 1px solid var(--ops-border) !important;
+    color: var(--ops-text) !important;
+    border-radius: 8px !important;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+body:not(.login-page) .form-control::placeholder { color: #6b7591 !important; }
+body:not(.login-page) .form-control:focus {
+    background-color: rgba(11,16,32,.8) !important;
+    border-color: var(--ops-primary) !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,.18) !important;
+}
+body:not(.login-page) .input-group-text {
+    background-color: var(--ops-panel-2) !important;
+    color: var(--ops-text-dim) !important;
+}
+body:not(.login-page) .custom-select {
+    background-color: var(--ops-bg-2) !important;
+    color: var(--ops-text) !important;
+    border-color: var(--ops-border) !important;
+}
+/* select2 下拉 */
+body:not(.login-page) .select2-container--default .select2-selection--single,
+body:not(.login-page) .select2-container--default .select2-selection--multiple {
+    background-color: var(--ops-bg-2) !important;
+    border: 1px solid var(--ops-border) !important;
+}
+body:not(.login-page) .select2-container--default .select2-selection__rendered {
+    color: var(--ops-text) !important;
+}
+body:not(.login-page) .select2-dropdown {
+    background-color: var(--ops-panel) !important;
+    border: 1px solid var(--ops-border) !important;
+}
+body:not(.login-page) .select2-results__option { color: var(--ops-text); }
+body:not(.login-page) .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--ops-primary) !important;
+}
+/* 单选/复选 */
+body:not(.login-page) .form-check-label,
+body:not(.login-page) .icheck-primary label { color: var(--ops-text) !important; }
+
+/* ==========================================================================
+   按钮 Buttons
+   ========================================================================== */
+body:not(.login-page) .btn {
+    border-radius: 8px !important;
+    font-weight: 500;
+    border: none;
+    transition: all .18s ease;
+}
+body:not(.login-page) .btn-primary {
+    background: linear-gradient(135deg, var(--ops-primary), var(--ops-primary-2)) !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(99,102,241,.32);
+}
+body:not(.login-page) .btn-primary:hover {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+    box-shadow: 0 6px 20px rgba(99,102,241,.45);
+    transform: translateY(-1px);
+}
+body:not(.login-page) .btn-secondary {
+    background: var(--ops-panel-2) !important;
+    border: 1px solid var(--ops-border) !important;
+    color: var(--ops-text) !important;
+}
+body:not(.login-page) .btn-secondary:hover { background: var(--ops-border) !important; }
+body:not(.login-page) .btn-default {
+    background: var(--ops-panel-2) !important;
+    border: 1px solid var(--ops-border) !important;
+    color: var(--ops-text) !important;
+}
+body:not(.login-page) .btn-default:hover { background: var(--ops-border) !important; color: #fff !important; }
+body:not(.login-page) .btn-success { background: linear-gradient(135deg,#059669,#22c55e) !important; }
+body:not(.login-page) .btn-danger  { background: linear-gradient(135deg,#dc2626,#ef4444) !important; }
+body:not(.login-page) .btn-warning { background: linear-gradient(135deg,#d97706,#f59e0b) !important; color: #1a2033 !important; }
+body:not(.login-page) .btn-info    { background: linear-gradient(135deg,#0284c7,#38bdf8) !important; }
+
+/* ==========================================================================
+   首页统计小卡片 small-box（渐变 + 微光 + 悬停）
+   ========================================================================== */
+body:not(.login-page) .small-box {
+    border-radius: 14px !important;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.07);
+    box-shadow: 0 10px 30px rgba(2,6,23,.5) !important;
+    transition: transform .22s ease, box-shadow .22s ease;
+    position: relative;
+}
+body:not(.login-page) .small-box::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+}
+body:not(.login-page) .small-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 44px rgba(2,6,23,.65) !important;
+}
+body:not(.login-page) .small-box .inner h3 {
+    color: #fff !important;
+    font-weight: 800;
+    font-size: 2rem;
+    text-shadow: 0 2px 10px rgba(0,0,0,.35);
+    letter-spacing: .5px;
+}
+body:not(.login-page) .small-box .inner p { color: rgba(255,255,255,.88) !important; font-weight: 500; }
+body:not(.login-page) .small-box .small-box-footer {
+    background: rgba(0, 0, 0, 0.25) !important;
+    color: #fff !important;
+    position: relative;
+    z-index: 1;
+}
+body:not(.login-page) .small-box .small-box-footer:hover { background: rgba(0,0,0,.4) !important; color:#fff !important; }
+body:not(.login-page) .small-box .icon { color: rgba(255,255,255,.22); }
+/* 统计卡片改用渐变质感 */
+body:not(.login-page) .small-box.bg-info {
+    background: linear-gradient(135deg, #2563eb, #6366f1 55%, #8b5cf6) !important;
+}
+body:not(.login-page) .small-box.bg-success {
+    background: linear-gradient(135deg, #059669, #10b981 55%, #22d3ee) !important;
+}
+body:not(.login-page) .small-box.bg-warning {
+    background: linear-gradient(135deg, #d97706, #f59e0b 60%, #fbbf24) !important;
+}
+body:not(.login-page) .small-box.bg-danger {
+    background: linear-gradient(135deg, #dc2626, #ef4444 60%, #f97316) !important;
+}
+body:not(.login-page) .small-box.bg-primary {
+    background: linear-gradient(135deg, #4f46e5, #8b5cf6 60%, #a855f7) !important;
+}
+body:not(.login-page) .small-box.bg-teal {
+    background: linear-gradient(135deg, #0d9488, #14b8a6 60%, #22d3ee) !important;
+}
+body:not(.login-page) .small-box.bg-indigo {
+    background: linear-gradient(135deg, #4338ca, #6366f1 60%, #818cf8) !important;
+}
+
+/* ==========================================================================
+   徽章 / 标签 / 状态点
+   ========================================================================== */
+body:not(.login-page) .badge { border-radius: 6px; font-weight: 500; padding: .35em .6em; }
+body:not(.login-page) .badge-light { background: var(--ops-panel-2) !important; color: var(--ops-text) !important; }
+body:not(.login-page) .badge-success { background: linear-gradient(135deg,#059669,#22c55e) !important; }
+body:not(.login-page) .badge-warning { background: linear-gradient(135deg,#d97706,#f59e0b) !important; }
+body:not(.login-page) .badge-danger { background: linear-gradient(135deg,#dc2626,#ef4444) !important; }
+body:not(.login-page) .badge-info { background: linear-gradient(135deg,#0284c7,#38bdf8) !important; }
+body:not(.login-page) .label { border-radius: 4px; }
+
+/* 在线/离线呼吸灯状态点 */
+body:not(.login-page) .ops-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+body:not(.login-page) .ops-dot.online {
+    background: var(--ops-success);
+    box-shadow: 0 0 0 0 rgba(34,197,94,.6);
+    animation: opsPulse 1.8s infinite;
+}
+body:not(.login-page) .ops-dot.offline {
+    background: var(--ops-danger);
+    box-shadow: 0 0 0 0 rgba(239,68,68,.5);
+}
+body:not(.login-page) .ops-dot.warning {
+    background: var(--ops-warning);
+    box-shadow: 0 0 0 0 rgba(245,158,11,.6);
+    animation: opsPulse 1.8s infinite;
+}
+@keyframes opsPulse {
+    0% { box-shadow: 0 0 0 0 rgba(34,197,94,.55); }
+    70% { box-shadow: 0 0 0 7px rgba(34,197,94,0); }
+    100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+}
+
+/* ==========================================================================
+   分页
+   ========================================================================== */
+body:not(.login-page) .pagination .page-link {
+    background: var(--ops-panel-2) !important;
+    border: 1px solid var(--ops-border) !important;
+    color: var(--ops-text) !important;
+    border-radius: 6px !important;
+    margin: 0 2px;
+}
+body:not(.login-page) .pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--ops-primary), var(--ops-primary-2)) !important;
+    border-color: var(--ops-primary) !important;
+    box-shadow: 0 4px 12px rgba(99,102,241,.3);
+}
+body:not(.login-page) .pagination .page-link:hover { background: var(--ops-border) !important; color: #fff !important; }
+
+/* ==========================================================================
+   弹窗 Modal / SweetAlert2 / Toastr
+   ========================================================================== */
+body:not(.login-page) .modal-content {
+    background: linear-gradient(180deg, rgba(31,42,74,.96), rgba(23,31,56,.98)) !important;
+    border: 1px solid var(--ops-border) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 24px 64px rgba(2,6,23,.6) !important;
+}
+body:not(.login-page) .modal-header {
+    border-bottom: 1px solid var(--ops-border) !important;
+}
+body:not(.login-page) .modal-footer {
+    border-top: 1px solid var(--ops-border) !important;
+}
+body:not(.login-page) .modal-title { color: #fff !important; }
+body:not(.login-page) .close { color: #fff !important; text-shadow: none; }
+
+body:not(.login-page) .swal2-popup {
+    background: var(--ops-panel) !important;
+    border: 1px solid var(--ops-border);
+    border-radius: 16px !important;
+}
+body:not(.login-page) .swal2-title,
+body:not(.login-page) .swal2-html-container { color: var(--ops-text) !important; }
+
+body:not(.login-page) #toast-container > .toast {
+    background: var(--ops-panel-2) !important;
+    border: 1px solid var(--ops-border) !important;
+    color: var(--ops-text) !important;
+    border-radius: 10px !important;
+}
+
+/* ==========================================================================
+   下拉菜单 / 其他
+   ========================================================================== */
+body:not(.login-page) .dropdown-menu {
+    background: var(--ops-panel-2) !important;
+    border: 1px solid var(--ops-border) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 12px 32px rgba(2,6,23,.5) !important;
+}
+body:not(.login-page) .dropdown-item { color: var(--ops-text) !important; }
+body:not(.login-page) .dropdown-item:hover { background: rgba(99,102,241,.15) !important; color: #fff !important; }
+
+body:not(.login-page) .breadcrumb { background: transparent !important; }
+body:not(.login-page) .breadcrumb-item,
+body:not(.login-page) .breadcrumb-item a { color: var(--ops-text-dim) !important; }
+body:not(.login-page) .breadcrumb-item.active { color: #fff !important; }
+
+body:not(.login-page) hr { border-color: var(--ops-border); }
+body:not(.login-page) .callout,
+body:not(.login-page) .alert {
+    border-radius: 10px;
+    border: 1px solid var(--ops-border);
+}
+body:not(.login-page) .alert-info { background: rgba(56,189,248,.12) !important; color: #bfe9ff !important; }
+body:not(.login-page) .alert-warning { background: rgba(245,158,11,.12) !important; color: #fcd9a1 !important; }
+body:not(.login-page) .alert-danger { background: rgba(239,68,68,.12) !important; color: #fbb6b6 !important; }
+body:not(.login-page) .alert-success { background: rgba(34,197,94,.12) !important; color: #a7f3d0 !important; }
+
+/* 滚动条（WebKit） */
+body:not(.login-page) ::-webkit-scrollbar { width: 10px; height: 10px; }
+body:not(.login-page) ::-webkit-scrollbar-track { background: var(--ops-bg); }
+body:not(.login-page) ::-webkit-scrollbar-thumb {
+    background: var(--ops-border);
+    border-radius: 6px;
+}
+body:not(.login-page) ::-webkit-scrollbar-thumb:hover { background: var(--ops-primary); }
+
+/* 折叠菜单箭头颜色 */
+body:not(.login-page) .nav-sidebar .nav-link .right,
+body:not(.login-page) .nav-sidebar .nav-link .nav-arrow { color: var(--ops-text-dim); }
+
+/* 卡片/表格中的按钮间距与链接 */
+body:not(.login-page) a { color: #a5b4fc; }
+body:not(.login-page) a:hover { color: #c7d2fe; }
+
+/* ==========================================================================
+   进度条 Progress（现代化渐变）
+   ========================================================================== */
+body:not(.login-page) .progress {
+    background: rgba(255,255,255,.06) !important;
+    border-radius: 20px !important;
+    height: 8px !important;
+}
+body:not(.login-page) .progress-bar {
+    border-radius: 20px !important;
+    background: linear-gradient(90deg, var(--ops-info), var(--ops-primary)) !important;
+}
+body:not(.login-page) .progress-bar.bg-success { background: linear-gradient(90deg,#059669,#22c55e) !important; }
+body:not(.login-page) .progress-bar.bg-warning { background: linear-gradient(90deg,#d97706,#f59e0b) !important; }
+body:not(.login-page) .progress-bar.bg-danger { background: linear-gradient(90deg,#dc2626,#ef4444) !important; }
+
+/* ==========================================================================
+   标签页 Nav-tabs
+   ========================================================================== */
+body:not(.login-page) .nav-tabs .nav-link {
+    color: var(--ops-text-dim) !important;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+}
+body:not(.login-page) .nav-tabs .nav-link.active {
+    color: #fff !important;
+    background: transparent !important;
+    border-bottom: 2px solid var(--ops-primary) !important;
+}
+body:not(.login-page) .nav-tabs .nav-link:hover { color: #fff !important; }
+
+/* 内容页标题栏 */
+body:not(.login-page) .content-header h1,
+body:not(.login-page) .content-header .h1 {
+    font-weight: 700 !important;
+    letter-spacing: .5px;
+}
+
+/* 登录后欢迎横幅渐变文字（用于 page.html） */
+body:not(.login-page) .ops-welcome-banner {
+    background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99,102,241,.25) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 50% at 80% 90%, rgba(168,85,247,.2) 0%, transparent 60%),
+        linear-gradient(135deg, #0b1020 0%, #1e1b4b 45%, #0b1020 100%);
+    border: 1px solid var(--ops-border);
+    border-radius: 14px;
+    color: #fff;
+    padding: 22px 26px;
+    box-shadow: 0 10px 34px rgba(2,6,23,.5);
+}
+
+
+
+/* ========== OpsMonitor 使用教程模块 ========== */
+.ops-help-category { background: var(--ops-card,#111a33); border: 1px solid var(--ops-border,#26324f); border-radius: 14px; box-shadow: 0 6px 20px rgba(2,6,23,.4); overflow: hidden; }
+.ops-help-category .card-header { background: linear-gradient(135deg, rgba(99,102,241,.18), rgba(168,85,247,.12)); border-bottom: 1px solid var(--ops-border,#26324f); }
+.ops-help-category .card-header .card-title { color: #fff; font-size: 15px; }
+.ops-help-nav .nav-link { color: #aab4d0; padding: 11px 18px; border-left: 3px solid transparent; border-radius: 0 !important; font-size: 14px; transition: all .2s; }
+.ops-help-nav .nav-link:hover { background: rgba(99,102,241,.10); color: #fff; padding-left: 22px; }
+.ops-help-nav .nav-link.active { background: linear-gradient(90deg, rgba(99,102,241,.30), rgba(99,102,241,.08)); border-left-color: #6366f1; color: #fff; font-weight: 600; }
+.ops-help-nav .nav-link i { margin-right: 8px; width: 18px; text-align: center; color: #8b94b8; }
+.ops-help-nav .nav-link.active i { color: #a5b4fc; }
+.ops-help-tip { background: rgba(99,102,241,.06); border-top: 1px solid var(--ops-border,#26324f); color: #8b94b8; font-size: 12px; line-height: 1.6; }
+
+.ops-help-item { display: flex; gap: 16px; align-items: flex-start; }
+.ops-help-item-icon { width: 46px; height: 46px; min-width: 46px; border-radius: 12px; background: linear-gradient(135deg, rgba(99,102,241,.25), rgba(168,85,247,.18)); display: flex; align-items: center; justify-content: center; color: #a5b4fc; font-size: 20px; }
+.ops-help-item-body { flex: 1; min-width: 0; }
+.ops-help-item-body .card-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.ops-help-item-body .card-title a { color: #e2e8f0; text-decoration: none; transition: color .2s; }
+.ops-help-item-body .card-title a:hover { color: #a5b4fc; }
+.ops-help-item-meta { margin: 4px 0 8px; color: #8b94b8; font-size: 12px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ops-help-item-desc { color: #8b94b8; font-size: 13px; line-height: 1.6; margin-bottom: 10px; }
+.ops-badge-cat { background: rgba(99,102,241,.18); color: #a5b4fc; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+.ops-help-read-btn { background: rgba(99,102,241,.16); border: 1px solid rgba(99,102,241,.35); color: #a5b4fc; border-radius: 8px; }
+.ops-help-read-btn:hover { background: rgba(99,102,241,.3); color: #fff; }
+.ops-empty-icon { font-size: 42px; color: #3a4568; }
+
+.ops-help-article { background: var(--ops-card,#111a33); border: 1px solid var(--ops-border,#26324f); border-radius: 14px; box-shadow: 0 6px 20px rgba(2,6,23,.4); }
+.ops-help-title { color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+.ops-help-article-meta { display: flex; align-items: center; gap: 16px; color: #8b94b8; font-size: 13px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px dashed var(--ops-border,#26324f); }
+.ops-help-md-content { color: #cbd5e1; font-size: 14.5px; line-height: 1.75; word-break: break-word; }
+.ops-help-md-content h1, .ops-help-md-content h2, .ops-help-md-content h3, .ops-help-md-content h4 { color: #f1f5f9; font-weight: 600; margin: 22px 0 12px; }
+.ops-help-md-content h1 { font-size: 22px; padding-bottom: 8px; border-bottom: 1px solid var(--ops-border,#26324f); }
+.ops-help-md-content h2 { font-size: 19px; padding-left: 10px; border-left: 4px solid #6366f1; }
+.ops-help-md-content h3 { font-size: 16.5px; color: #a5b4fc; }
+.ops-help-md-content p { margin: 8px 0; }
+.ops-help-md-content strong { color: #f1f5f9; }
+.ops-help-md-content a { color: #818cf8; text-decoration: underline; }
+.ops-help-md-content ul, .ops-help-md-content ol { margin: 8px 0 8px 20px; }
+.ops-help-md-content li { margin: 4px 0; }
+.ops-help-md-content blockquote { margin: 12px 0; padding: 8px 14px; border-left: 4px solid #6366f1; background: rgba(99,102,241,.08); border-radius: 0 8px 8px 0; color: #aab4d0; }
+.ops-help-md-content code { background: rgba(139,148,184,.15); color: #f472b6; padding: 2px 6px; border-radius: 5px; font-size: 13px; }
+.ops-help-md-content pre { background: #0d1330; border: 1px solid #26324f; border-radius: 10px; padding: 14px 16px; overflow: auto; margin: 12px 0; }
+.ops-help-md-content pre code { background: transparent; color: #cbd5e1; padding: 0; font-size: 13px; line-height: 1.6; }
+.ops-help-md-content table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13.5px; }
+.ops-help-md-content th { background: rgba(99,102,241,.14); color: #e2e8f0; font-weight: 600; padding: 9px 12px; border: 1px solid var(--ops-border,#26324f); text-align: left; white-space: nowrap; }
+.ops-help-md-content td { padding: 8px 12px; border: 1px solid var(--ops-border,#26324f); color: #cbd5e1; }
+.ops-help-md-content tr:nth-child(even) td { background: rgba(139,148,184,.05); }
+.ops-help-related .list-group-item { background: transparent; border-color: var(--ops-border,#26324f); padding: 10px 16px; }
+.ops-help-related .list-group-item a { color: #aab4d0; text-decoration: none; font-size: 13.5px; line-height: 1.5; display: block; transition: color .2s; }
+.ops-help-related .list-group-item a:hover { color: #a5b4fc; }
+.ops-help-related .ops-help-related-active { color: #a5b4fc !important; font-weight: 600; }

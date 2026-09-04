@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <div  th:replace="common/header.html"></div>
+
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div th:replace="common/chart.html"></div>
+
+<div class="wrapper">
+
+  <div th:replace="common/navbar.html"></div>
+
+  <div th:replace="common/aside.html"></div>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper" style="font-size: 0.9rem">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1></h1>
+          </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item active"></li>
+                </ol>
+            </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+
+  <div class="col-md-10">
+    <div class="card card-primary">
+      <div class="card-header">
+        <h3 class="card-title">添加服务接口/端口检测(响应状态码200即为成功)</h3>
+          <div class=" float-sm-right">
+              <a th:href="@{'/heathMonitor/list'}">返回</a>
+          </div>
+      </div>
+      <!-- /.card-header -->
+      <!-- form start -->
+        <form role="form" id="form1" th:action="@{'/heathMonitor/save'}">
+            <input type="hidden" name="id" th:value="${heathMonitor.id}"/>
+            <div class="card-body">
+                <!-- 服务端校验失败提示 -->
+                <div th:if="${errorMsg != null and errorMsg != ''}" class="alert alert-danger alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <span th:text="${errorMsg}"></span>
+                </div>
+                <div class="form-group">
+                    <label for="fromMailName"><font color="red">*</font>服务名称</label>
+                    <input type="text" autocomplete="off"  th:value="${heathMonitor.appName}" class="validate[required,maxSize[50]] form-control" name="appName" id="appName" placeholder="输入应用服务名称">
+                </div>
+                <div class="form-group">
+                    <label><font color="red">*</font>监控类型</label>
+                    <select class="form-control" name="monitorType" id="monitorType" onchange="toggleMonitorType()">
+                        <option value="1">HTTP 接口检测</option>
+                        <option value="2">TCP 端口检测</option>
+                    </select>
+                    <small class="form-text text-muted">HTTP 检测接口返回状态码 200 即正常；TCP 检测端口可连通即正常</small>
+                </div>
+
+                <!-- HTTP 接口配置 -->
+                <div id="httpBlock" class="monitor-block">
+                    <div class="form-group">
+                        <label for="fromPwd"><font color="red">*</font>服务接口URL（必须为http，get请求方式，返回状态码为200即为正常）</label>
+                        <input type="text" autocomplete="off"  th:value="${heathMonitor.heathUrl}" class="form-control" name="heathUrl" id="heathUrl" placeholder="如http://192.168.1.1:9999/opsmonitor/heath">
+                    </div>
+                </div>
+
+                <!-- TCP 端口配置 -->
+                <div id="tcpBlock" class="monitor-block" style="display:none;">
+                    <div class="form-group">
+                        <label><font color="red">*</font>目标主机 IP</label>
+                        <input type="text" autocomplete="off" th:value="${heathMonitor.hostIp}" class="form-control" name="hostIp" id="hostIp" placeholder="如 192.168.1.100">
+                    </div>
+                    <div class="form-group">
+                        <label><font color="red">*</font>目标端口</label>
+                        <input type="number" min="1" max="65535" autocomplete="off" th:value="${heathMonitor.port}" class="form-control" name="port" id="port" placeholder="如 3306">
+                    </div>
+                    <div class="form-group">
+                        <label>连接超时（毫秒，默认3000）</label>
+                        <input type="number" min="100" max="30000" autocomplete="off" th:value="${heathMonitor.timeoutMs}" class="form-control" name="timeoutMs" id="timeoutMs" placeholder="3000">
+                    </div>
+                </div>
+            </div>
+            <!-- /.card-body -->
+
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary btn-sm">保存</button>
+                <button type="button"  th:onclick="goback()"  class="btn bg-gradient-danger btn-sm">返回</button>
+            </div>
+
+        </form>
+      <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+
+
+  </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+  <div th:replace="common/footer.html"></div>
+
+</div>
+<!-- ./wrapper -->
+<link rel="stylesheet" th:href="@{'/static/js/jQuery/validationEngine.jquery.css'}" type="text/css"/>
+<script th:src="@{'/static/js/jQuery/jquery.validationEngine-zh_CN.js'}" type="text/javascript" charset="utf-8"></script>
+<script th:src="@{'/static/js/jQuery/jquery.validationEngine.js'}" type="text/javascript" charset="utf-8"></script>
+<script th:inline="javascript">
+    $(document).ready(function(){
+        $("#form1").validationEngine();
+        // 初始化监控类型显示
+        // 注意：新增时 monitorType 为 null，若直接内联输出会得到 "var currentType = ;" 的语法错误，
+        // 进而导致下面的校验规则注入和类型联动全部失效，此处必须用 ?: 兜底默认值
+        var currentType = [[${heathMonitor.monitorType} ?: '1']];
+        if (!currentType) {
+            currentType = '1';
+        }
+        $("#monitorType").val(currentType);
+        toggleMonitorType();
+    });
+
+    function toggleMonitorType() {
+        var type = $("#monitorType").val();
+        if (type === '2') {
+            $("#tcpBlock").show();
+            $("#httpBlock").hide();
+            $("#heathUrl").removeAttr('data-validation-engine');
+            $("#hostIp").attr('data-validation-engine', 'required');
+            $("#port").attr('data-validation-engine', 'required,custom[number]');
+        } else {
+            $("#tcpBlock").hide();
+            $("#httpBlock").show();
+            $("#hostIp").removeAttr('data-validation-engine');
+            $("#port").removeAttr('data-validation-engine');
+            $("#heathUrl").attr('data-validation-engine', 'required,maxSize[255]');
+        }
+    }
+
+    function goback() {
+        window.location.href = "/opsmonitor/heathMonitor/list";
+    }
+</script>
+</body>
+</html>

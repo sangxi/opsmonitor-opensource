@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.opsmonitor.mapper.ReportLogMapper">
+
+	<resultMap id="resultMap" type="com.opsmonitor.entity.ReportLog">
+		<id column="ID" property="id" jdbcType="CHAR" />
+		<result column="REPORT_TYPE" property="reportType" jdbcType="CHAR" />
+		<result column="TITLE" property="title" jdbcType="CHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="SEND_STATUS" property="sendStatus" jdbcType="CHAR" />
+		<result column="RECEIVER" property="receiver" jdbcType="CHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="tableColumnList">
+		ID,REPORT_TYPE,TITLE,CONTENT,SEND_STATUS,RECEIVER,CREATE_TIME
+	</sql>
+
+	<sql id="queryByParams">
+		<if test="reportType != null">
+			AND REPORT_TYPE = #{reportType}
+		</if>
+		<if test="sendStatus != null">
+			AND SEND_STATUS = #{sendStatus}
+		</if>
+	</sql>
+
+	<select id="selectById" resultMap="resultMap" parameterType="java.lang.String">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM REPORT_LOG WHERE ID=#{id}
+	</select>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM REPORT_LOG WHERE ID IN
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<insert id="save" parameterType="com.opsmonitor.entity.ReportLog">
+		INSERT INTO REPORT_LOG
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="id != null" >ID,</if>
+			<if test="reportType != null" >REPORT_TYPE,</if>
+			<if test="title != null" >TITLE,</if>
+			<if test="content != null" >CONTENT,</if>
+			<if test="sendStatus != null" >SEND_STATUS,</if>
+			<if test="receiver != null" >RECEIVER,</if>
+			<if test="createTime != null" >CREATE_TIME</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="id != null" >#{id},</if>
+			<if test="reportType != null" >#{reportType},</if>
+			<if test="title != null" >#{title},</if>
+			<if test="content != null" >#{content},</if>
+			<if test="sendStatus != null" >#{sendStatus},</if>
+			<if test="receiver != null" >#{receiver},</if>
+			<if test="createTime != null" >#{createTime}</if>
+		</trim>
+	</insert>
+
+	<update id="updateById" parameterType="com.opsmonitor.entity.ReportLog">
+		UPDATE REPORT_LOG
+		<set>
+			<if test="reportType != null" >REPORT_TYPE= #{reportType},</if>
+			<if test="title != null" >TITLE= #{title},</if>
+			<if test="content != null" >CONTENT= #{content},</if>
+			<if test="sendStatus != null" >SEND_STATUS= #{sendStatus},</if>
+			<if test="receiver != null" >RECEIVER= #{receiver},</if>
+			<if test="createTime != null" >CREATE_TIME= #{createTime}</if>
+		</set>
+		WHERE ID = #{id}
+	</update>
+
+	<select id="countByParams" parameterType="map" resultType="java.lang.Integer">
+		SELECT count(*) FROM REPORT_LOG t
+		<where>
+			<include refid="queryByParams" />
+		</where>
+	</select>
+
+	<select id="selectAllByParams" parameterType="map" resultMap="resultMap">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM REPORT_LOG
+		<where>
+			<include refid="queryByParams" />
+		</where>
+		ORDER BY CREATE_TIME DESC
+	</select>
+
+	<select id="selectByParams" parameterType="map" resultMap="resultMap">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM REPORT_LOG
+		<where>
+			<include refid="queryByParams" />
+		</where>
+		ORDER BY CREATE_TIME DESC
+	</select>
+
+</mapper>

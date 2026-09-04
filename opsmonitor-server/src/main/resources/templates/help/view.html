@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <div th:replace="common/header.html"></div>
+  <link rel="stylesheet" th:href="@{'/static/common/help/atom-one-dark.min.css'}">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <div th:replace="common/navbar.html"></div>
+  <div th:replace="common/aside.html"></div>
+
+  <!-- Content Wrapper -->
+  <div class="content-wrapper">
+    <!-- Content Header -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1><i class="fas fa-book-open"></i> 使用教程</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a th:href="@{'/'}">首页</a></li>
+              <li class="breadcrumb-item"><a th:href="@{'/help/list'}">使用教程</a></li>
+              <li class="breadcrumb-item active" th:text="${help.title}">教程详情</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+
+          <!-- 左侧正文 -->
+          <div class="col-md-9">
+            <div class="card ops-help-article">
+              <div class="card-body">
+                <h2 class="ops-help-title" th:text="${help.title}">教程标题</h2>
+                <div class="ops-help-article-meta">
+                  <span class="badge ops-badge-cat"><i th:class="${help.categoryIcon}"></i> <span th:text="${help.categoryName}">分类</span></span>
+                  <span th:if="${help.createTime != null}">
+                    <i class="far fa-clock"></i>
+                    <span th:text="${#dates.format(help.createTime, 'yyyy-MM-dd HH:mm')}">时间</span>
+                  </span>
+                </div>
+                <div class="ops-help-md-content" id="helpContent"></div>
+              </div>
+              <div class="card-footer">
+                <a class="btn btn-sm btn-secondary" th:href="@{'/help/list?category=' + ${help.categoryId}}">
+                  <i class="fas fa-arrow-left"></i> &nbsp;返回列表
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右侧相关文章 -->
+          <div class="col-md-3">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-list"></i> &nbsp;同类教程</h3>
+              </div>
+              <div class="card-body p-0">
+                <ul class="list-group list-group-flush ops-help-related">
+                  <li class="list-group-item" th:each="item : ${relatedList}">
+                    <a th:href="@{'/help/view?id=' + ${item.id}}"
+                       th:classappend="${item.id == help.id ? 'ops-help-related-active' : ''}"
+                       th:text="${item.title}">文章</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div th:replace="common/footer.html"></div>
+</div>
+
+<!-- jQuery -->
+<script th:src="@{'/static/AdminLTE/plugins/jquery/jquery.min.js'}"></script>
+<!-- Bootstrap 4 -->
+<script th:src="@{'/static/AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js'}"></script>
+<!-- AdminLTE App -->
+<script th:src="@{'/static/AdminLTE/dist/js/adminlte.min.js'}"></script>
+<!-- Markdown 渲染 -->
+<script th:src="@{'/static/common/help/marked.min.js'}"></script>
+<!-- 代码高亮 -->
+<script th:src="@{'/static/common/help/highlight.min.js'}"></script>
+<script th:inline="javascript">
+  (function () {
+    try {
+      var content = /*[[${help.content}]]*/ '';
+      var container = document.getElementById('helpContent');
+      if (!container) return;
+      if (typeof marked === 'undefined') {
+        container.innerHTML = '<p class="text-muted">Markdown 渲染库加载失败，以下为原文：</p><pre>' + content + '</pre>';
+        return;
+      }
+      // 渲染 Markdown
+      container.innerHTML = marked.parse(content || '');
+      // 代码高亮
+      if (typeof hljs !== 'undefined') {
+        container.querySelectorAll('pre code').forEach(function (block) {
+          hljs.highlightElement(block);
+        });
+      }
+      // 所有链接新窗口打开
+      container.querySelectorAll('a[href]').forEach(function (a) {
+        if (a.getAttribute('href').indexOf('#') !== 0) {
+          a.setAttribute('target', '_blank');
+        }
+      });
+    } catch (e) {
+      console.error(e);
+      var el = document.getElementById('helpContent');
+      if (el) el.innerHTML = '<p class="text-danger">内容渲染失败</p>';
+    }
+  })();
+</script>
+</body>
+</html>

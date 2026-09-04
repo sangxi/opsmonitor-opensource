@@ -1,0 +1,87 @@
+# OpsMonitor Server 外部配置文件
+# 部署时通过环境变量覆盖以下 ${...} 占位符
+
+server:
+  port: 9999
+  servlet:
+    context-path: /opsmonitor
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 100
+    min-spare-threads: 10
+
+spring:
+  application:
+    name: opsmonitor-server
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:opsmonitor}?characterEncoding=utf-8&characterSetResults=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:123456}
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 15
+      auto-commit: true
+      idle-timeout: 60000
+      pool-name: OpsMonitorHikariCP
+      max-lifetime: 60000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    mode: HTML
+  # 静态资源映射（页面 CSS/JS/图片都走 /static 前缀，缺失会导致样式全丢）
+  mvc:
+    static-path-pattern: /static/**
+
+# 日志
+logging:
+  file:
+    path: /app/logs
+    name: /app/logs/opsmonitor-server.log
+  level:
+    root: INFO
+    com.opsmonitor: INFO
+
+# 自定义参数（代码中 @ConfigurationProperties(prefix = "base") 绑定，前缀必须是 base）
+base:
+  #登录账号管理员admin的密码（111111 为默认值，生产务必通过环境变量 OPSMONITOR_ADMIN_PWD 覆盖）
+  admindPwd: ${OPSMONITOR_ADMIN_PWD:111111}
+  #通信token，agent端和此保持一致
+  omToken: ${OMTOKEN:opsmonitor}
+  #是否开启公众看板，yes开启，no关闭，公众看板页面无需登陆
+  dashView: yes
+  #数据表监控间隔,单位毫秒，默认60分钟
+  dbTableTimes: 3600000
+  #服务接口监控间隔，单位毫秒，默认10分钟
+  heathTimes: 600000
+
+# Mybatis 配置（缺失会导致 Invalid bound statement）
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+# 邮件告警
+mail:
+  allWarnMail: yes
+  cpuWarnMail: yes
+  cpuWarnVal: 95
+  memWarnMail: yes
+  memWarnVal: 95
+  diskWarnMail: yes
+  diskWarnVal: 95
+  loadWarnMail: yes
+  loadWarnVal: 5.0
+  hostDownWarnMail: yes
+  appDownWarnMail: yes
+  heathWarnMail: yes
+  defaultWarn: INFO
+  warnCacheTimes: 7200
+  titlePrefix: OpsMonitor告警

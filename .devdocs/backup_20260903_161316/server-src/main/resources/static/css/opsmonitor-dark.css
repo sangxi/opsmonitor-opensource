@@ -1,0 +1,416 @@
+/* ==========================================================================
+   OpsMonitor 深色现代主题 (基于 AdminLTE 3 覆盖)
+   仅作用于管理后台 body.hold-transition，不影响登录页(login-page)
+   配色：深蓝灰底 + 靛蓝/紫色强调，与登录页 EdgeOne 风格一致
+   ========================================================================== */
+
+/* ---------- CSS 变量 ---------- */
+body.hold-transition {
+    --ops-bg: #0f1420;
+    --ops-bg-2: #151b2c;
+    --ops-panel: #1a2138;
+    --ops-panel-2: #202a44;
+    --ops-border: #2b3552;
+    --ops-text: #d7dcea;
+    --ops-text-dim: #8b94ad;
+    --ops-primary: #6366f1;
+    --ops-primary-2: #8b5cf6;
+    --ops-info: #3b82f6;
+    --ops-success: #10b981;
+    --ops-warning: #f59e0b;
+    --ops-danger: #ef4444;
+    --ops-sidebar-bg: #141a2e;
+    --ops-sidebar-active: linear-gradient(90deg, rgba(99,102,241,.28), rgba(99,102,241,.05));
+}
+
+/* ---------- 全局底色 / 文字 ---------- */
+body.hold-transition,
+body.hold-transition.content-wrapper-bg {
+    background-color: var(--ops-bg) !important;
+    color: var(--ops-text);
+}
+
+body.hold-transition .wrapper {
+    background-color: var(--ops-bg);
+}
+
+/* 内容区 */
+body.hold-transition .content-wrapper,
+body.hold-transition .content {
+    background-color: var(--ops-bg) !important;
+    color: var(--ops-text);
+}
+
+body.hold-transition .content-header h1,
+body.hold-transition .content-header .h1,
+body.hold-transition h1, body.hold-transition h2,
+body.hold-transition h3, body.hold-transition h4,
+body.hold-transition h5, body.hold-transition h6,
+body.hold-transition label,
+body.hold-transition p,
+body.hold-transition td, body.hold-transition th,
+body.hold-transition span, body.hold-transition a {
+    color: var(--ops-text);
+}
+
+body.hold-transition .text-muted,
+body.hold-transition .small-box .inner p {
+    color: var(--ops-text-dim) !important;
+}
+
+/* ---------- 侧边栏 ---------- */
+body.hold-transition .main-sidebar,
+body.hold-transition .main-sidebar.sidebar-dark-primary,
+body.hold-transition .sidebar {
+    background: linear-gradient(180deg, #131a2e 0%, #0f1526 100%) !important;
+    border-right: 1px solid var(--ops-border);
+}
+
+/* Logo 区 */
+body.hold-transition .brand-link {
+    background: rgba(99, 102, 241, 0.10) !important;
+    border-bottom: 1px solid var(--ops-border);
+    padding: 0.9rem 1rem;
+}
+body.hold-transition .brand-link .brand-text {
+    color: #fff !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px;
+}
+body.hold-transition .brand-link .brand-image {
+    opacity: 1 !important;
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+}
+
+/* 菜单项 */
+body.hold-transition .nav-sidebar .nav-link,
+body.hold-transition .sidebar .nav-link {
+    color: #b7c0d6 !important;
+}
+body.hold-transition .nav-sidebar .nav-link:hover,
+body.hold-transition .sidebar .nav-link:hover {
+    background: rgba(99, 102, 241, 0.12) !important;
+    color: #fff !important;
+}
+body.hold-transition .nav-sidebar .nav-link.active,
+body.hold-transition .nav-sidebar .has-treeview.menu-open > .nav-link {
+    background: var(--ops-sidebar-active) !important;
+    color: #fff !important;
+    box-shadow: inset 3px 0 0 var(--ops-primary);
+}
+body.hold-transition .nav-treeview > .nav-item > .nav-link {
+    padding-left: 2.2rem;
+    color: #93a0bd !important;
+}
+body.hold-transition .nav-treeview > .nav-item > .nav-link.active {
+    color: #fff !important;
+}
+body.hold-transition .nav-icon,
+body.hold-transition .nav-treeview .nav-icon {
+    color: inherit;
+}
+body.hold-transition .nav-sidebar .nav-link.active .nav-icon {
+    color: #a5b4fc !important;
+}
+
+/* ---------- 顶栏 ---------- */
+body.hold-transition .main-header.navbar,
+body.hold-transition .navbar-white.navbar-light {
+    background: var(--ops-bg-2) !important;
+    border-bottom: 1px solid var(--ops-border);
+}
+body.hold-transition .main-header .nav-link {
+    color: var(--ops-text) !important;
+}
+body.hold-transition .main-header .nav-link:hover {
+    color: #fff !important;
+}
+body.hold-transition .main-header .navbar-nav .nav-link i {
+    font-size: 1.1rem;
+}
+
+/* ---------- 页脚 ---------- */
+body.hold-transition .main-footer {
+    background: var(--ops-bg-2) !important;
+    border-top: 1px solid var(--ops-border);
+    color: var(--ops-text-dim);
+}
+body.hold-transition .main-footer strong { color: var(--ops-text); }
+
+/* 控制侧边栏（右侧） */
+body.hold-transition .control-sidebar {
+    background: var(--ops-panel) !important;
+}
+
+/* ==========================================================================
+   卡片 Card
+   ========================================================================== */
+body.hold-transition .card {
+    background-color: var(--ops-panel) !important;
+    border: 1px solid var(--ops-border) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 6px 24px rgba(2, 6, 23, 0.35) !important;
+}
+body.hold-transition .card .card-header {
+    background-color: var(--ops-panel-2) !important;
+    border-bottom: 1px solid var(--ops-border) !important;
+    border-top-left-radius: 12px !important;
+    border-top-right-radius: 12px !important;
+    color: #fff !important;
+}
+body.hold-transition .card .card-title { color: #fff !important; }
+body.hold-transition .card.card-outline.card-primary { border-top: 3px solid var(--ops-primary) !important; }
+body.hold-transition .card-footer {
+    background: var(--ops-panel-2) !important;
+    border-top: 1px solid var(--ops-border) !important;
+}
+
+/* ==========================================================================
+   表格 Table
+   ========================================================================== */
+body.hold-transition .table,
+body.hold-transition .table.table-hover {
+    color: var(--ops-text) !important;
+    background-color: transparent;
+}
+body.hold-transition .table thead th {
+    background: var(--ops-panel-2) !important;
+    color: #fff !important;
+    border-bottom: 1px solid var(--ops-border) !important;
+    font-weight: 600;
+}
+body.hold-transition .table td,
+body.hold-transition .table th {
+    border-top: 1px solid var(--ops-border) !important;
+    vertical-align: middle;
+}
+body.hold-transition .table-hover tbody tr:hover {
+    background-color: rgba(99, 102, 241, 0.10) !important;
+    color: #fff;
+}
+body.hold-transition .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* 卡片内的表格容器 */
+body.hold-transition .card-body { background: transparent; }
+
+/* ==========================================================================
+   表单 Form controls
+   ========================================================================== */
+body.hold-transition .form-control,
+body.hold-transition .form-control:read-write,
+body.hold-transition .input-group-text,
+body.hold-transition select,
+body.hold-transition textarea {
+    background-color: var(--ops-bg-2) !important;
+    border: 1px solid var(--ops-border) !important;
+    color: var(--ops-text) !important;
+    border-radius: 8px !important;
+}
+body.hold-transition .form-control::placeholder { color: #6b7591 !important; }
+body.hold-transition .form-control:focus {
+    background-color: var(--ops-bg-2) !important;
+    border-color: var(--ops-primary) !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18) !important;
+}
+body.hold-transition .input-group-text {
+    background-color: var(--ops-panel-2) !important;
+    color: var(--ops-text-dim) !important;
+}
+body.hold-transition .custom-select {
+    background-color: var(--ops-bg-2) !important;
+    color: var(--ops-text) !important;
+    border-color: var(--ops-border) !important;
+}
+/* select2 下拉 */
+body.hold-transition .select2-container--default .select2-selection--single,
+body.hold-transition .select2-container--default .select2-selection--multiple {
+    background-color: var(--ops-bg-2) !important;
+    border: 1px solid var(--ops-border) !important;
+}
+body.hold-transition .select2-container--default .select2-selection__rendered {
+    color: var(--ops-text) !important;
+}
+body.hold-transition .select2-dropdown {
+    background-color: var(--ops-panel) !important;
+    border: 1px solid var(--ops-border) !important;
+}
+body.hold-transition .select2-results__option { color: var(--ops-text); }
+body.hold-transition .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--ops-primary) !important;
+}
+/* 单选/复选 */
+body.hold-transition .form-check-label,
+body.hold-transition .icheck-primary label { color: var(--ops-text) !important; }
+
+/* ==========================================================================
+   按钮 Buttons
+   ========================================================================== */
+body.hold-transition .btn {
+    border-radius: 8px !important;
+    font-weight: 500;
+    border: none;
+}
+body.hold-transition .btn-primary {
+    background: linear-gradient(135deg, var(--ops-primary), var(--ops-primary-2)) !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.30);
+}
+body.hold-transition .btn-primary:hover {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.45);
+}
+body.hold-transition .btn-secondary {
+    background: var(--ops-panel-2) !important;
+    border: 1px solid var(--ops-border) !important;
+    color: var(--ops-text) !important;
+}
+body.hold-transition .btn-secondary:hover { background: var(--ops-border) !important; }
+body.hold-transition .btn-default {
+    background: var(--ops-panel-2) !important;
+    border: 1px solid var(--ops-border) !important;
+    color: var(--ops-text) !important;
+}
+body.hold-transition .btn-default:hover { background: var(--ops-border) !important; color: #fff !important; }
+body.hold-transition .btn-success { background: var(--ops-success) !important; }
+body.hold-transition .btn-danger  { background: var(--ops-danger) !important; }
+body.hold-transition .btn-warning { background: var(--ops-warning) !important; color: #1a2033 !important; }
+body.hold-transition .btn-info    { background: var(--ops-info) !important; }
+
+/* ==========================================================================
+   首页统计小卡片 small-box
+   ========================================================================== */
+body.hold-transition .small-box {
+    border-radius: 12px !important;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.45) !important;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+body.hold-transition .small-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px rgba(2, 6, 23, 0.6) !important;
+}
+body.hold-transition .small-box .inner h3 {
+    color: #fff !important;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+body.hold-transition .small-box .inner p { color: rgba(255,255,255,.85) !important; }
+body.hold-transition .small-box .small-box-footer {
+    background: rgba(0, 0, 0, 0.22) !important;
+    color: #fff !important;
+}
+body.hold-transition .small-box .icon { color: rgba(255,255,255,.22); }
+/* 统计卡片改用渐变质感 */
+body.hold-transition .small-box.bg-info {
+    background: linear-gradient(135deg, #3b82f6, #6366f1) !important;
+}
+body.hold-transition .small-box.bg-success {
+    background: linear-gradient(135deg, #059669, #10b981) !important;
+}
+body.hold-transition .small-box.bg-warning {
+    background: linear-gradient(135deg, #d97706, #f59e0b) !important;
+}
+body.hold-transition .small-box.bg-danger {
+    background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+}
+
+/* ==========================================================================
+   徽章 / 标签 / 状态点
+   ========================================================================== */
+body.hold-transition .badge { border-radius: 6px; font-weight: 500; padding: .35em .6em; }
+body.hold-transition .badge-light { background: var(--ops-panel-2) !important; color: var(--ops-text) !important; }
+body.hold-transition .label { border-radius: 4px; }
+
+/* ==========================================================================
+   分页
+   ========================================================================== */
+body.hold-transition .pagination .page-link {
+    background: var(--ops-panel-2) !important;
+    border: 1px solid var(--ops-border) !important;
+    color: var(--ops-text) !important;
+}
+body.hold-transition .pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--ops-primary), var(--ops-primary-2)) !important;
+    border-color: var(--ops-primary) !important;
+}
+body.hold-transition .pagination .page-link:hover { background: var(--ops-border) !important; color: #fff !important; }
+
+/* ==========================================================================
+   弹窗 Modal / SweetAlert2 / Toastr
+   ========================================================================== */
+body.hold-transition .modal-content {
+    background: var(--ops-panel) !important;
+    border: 1px solid var(--ops-border) !important;
+    border-radius: 14px !important;
+}
+body.hold-transition .modal-header {
+    border-bottom: 1px solid var(--ops-border) !important;
+}
+body.hold-transition .modal-footer {
+    border-top: 1px solid var(--ops-border) !important;
+}
+body.hold-transition .modal-title { color: #fff !important; }
+body.hold-transition .close { color: #fff !important; text-shadow: none; }
+
+body.hold-transition .swal2-popup {
+    background: var(--ops-panel) !important;
+    border: 1px solid var(--ops-border);
+}
+body.hold-transition .swal2-title,
+body.hold-transition .swal2-html-container { color: var(--ops-text) !important; }
+
+body.hold-transition #toast-container > .toast {
+    background: var(--ops-panel-2) !important;
+    border: 1px solid var(--ops-border) !important;
+    color: var(--ops-text) !important;
+}
+
+/* ==========================================================================
+   下拉菜单 / 其他
+   ========================================================================== */
+body.hold-transition .dropdown-menu {
+    background: var(--ops-panel-2) !important;
+    border: 1px solid var(--ops-border) !important;
+}
+body.hold-transition .dropdown-item { color: var(--ops-text) !important; }
+body.hold-transition .dropdown-item:hover { background: rgba(99,102,241,.15) !important; color: #fff !important; }
+
+body.hold-transition .breadcrumb { background: transparent !important; }
+body.hold-transition .breadcrumb-item,
+body.hold-transition .breadcrumb-item a { color: var(--ops-text-dim) !important; }
+body.hold-transition .breadcrumb-item.active { color: #fff !important; }
+
+body.hold-transition hr { border-color: var(--ops-border); }
+body.hold-transition .callout,
+body.hold-transition .alert {
+    border-radius: 10px;
+    border: 1px solid var(--ops-border);
+}
+body.hold-transition .alert-info { background: rgba(59,130,246,.15) !important; color: #bcd4ff !important; }
+body.hold-transition .alert-warning { background: rgba(245,158,11,.15) !important; color: #fcd9a1 !important; }
+body.hold-transition .alert-danger { background: rgba(239,68,68,.15) !important; color: #fbb6b6 !important; }
+body.hold-transition .alert-success { background: rgba(16,185,129,.15) !important; color: #a7f3d0 !important; }
+
+/* 滚动条（WebKit） */
+body.hold-transition ::-webkit-scrollbar { width: 10px; height: 10px; }
+body.hold-transition ::-webkit-scrollbar-track { background: var(--ops-bg); }
+body.hold-transition ::-webkit-scrollbar-thumb {
+    background: var(--ops-border);
+    border-radius: 6px;
+}
+body.hold-transition ::-webkit-scrollbar-thumb:hover { background: var(--ops-primary); }
+
+/* 折叠菜单箭头颜色 */
+body.hold-transition .nav-sidebar .nav-link .right,
+body.hold-transition .nav-sidebar .nav-link .nav-arrow { color: var(--ops-text-dim); }
+
+/* 卡片/表格中的按钮间距与链接 */
+body.hold-transition a { color: #a5b4fc; }
+body.hold-transition a:hover { color: #c7d2fe; }
+
+

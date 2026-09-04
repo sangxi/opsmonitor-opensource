@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <div  th:replace="common/header.html"></div>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div th:replace="common/chart.html"></div>
+
+<div class="wrapper">
+
+  <div th:replace="common/navbar.html"></div>
+
+  <div th:replace="common/aside.html"></div>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper" style="font-size: 0.9rem">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>开放 API 令牌</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a th:href="@{/dash/main}">首页</a></li>
+              <li class="breadcrumb-item active">开放 API</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+
+        <!-- 提示卡 -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="callout callout-info">
+              <h5><i class="icon fas fa-info"></i> 开放 REST API 说明</h5>
+              <p>
+                第三方系统可通过以下接口获取监控数据（需携带请求头 <code>X-API-Token</code> 或参数 <code>apiToken</code>）：
+              </p>
+              <p>
+                <code>GET /opsmonitor/openapi/hosts</code> 主机列表 &nbsp;
+                <code>GET /opsmonitor/openapi/host?id=xxx</code> 主机详情 &nbsp;
+                <code>GET /opsmonitor/openapi/alarms</code> 告警记录 &nbsp;
+                <code>GET /opsmonitor/openapi/summary</code> 全局汇总
+              </p>
+              <p class="mb-0">返回 JSON：<code>{"code":0,"msg":"success","data":[...]}</code>，鉴权失败返回 401。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">令牌列表</h3>
+                <div class="float-sm-right">
+                  <button type="button" class="btn btn-sm bg-gradient-primary" onclick="showAdd()">新增令牌</button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table class="table table-bordered table-hover">
+                  <thead>
+                  <tr>
+                    <th style="width: 50px">序号</th>
+                    <th>名称</th>
+                    <th>令牌</th>
+                    <th style="width: 90px">状态</th>
+                    <th style="width: 160px">创建时间</th>
+                    <th style="width: 160px">过期时间</th>
+                    <th style="width: 150px">操作</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <th:block th:each="item,iterStat : ${page.list}">
+                    <tr>
+                      <td th:text="${iterStat.index+1}">1</td>
+                      <td th:text="${item.name}">name</td>
+                      <td>
+                        <code th:text="${item.token}">token</code>
+                      </td>
+                      <td>
+                        <span th:switch="${item.status}">
+                          <span th:case="'1'" class="badge badge-success">启用</span>
+                          <span th:case="*" class="badge badge-secondary">停用</span>
+                        </span>
+                      </td>
+                      <td th:text="${#dates.format(item.createTime,'yyyy-MM-dd HH:mm:ss')}">time</td>
+                      <td th:text="${item.expireTime == null ? '永不过期' : #dates.format(item.expireTime,'yyyy-MM-dd HH:mm:ss')}">expire</td>
+                      <td>
+                        <button type="button" th:onclick="regenerate([[${item.id}]])" class="btn btn-block bg-gradient-warning btn-sm">重新生成</button>
+                        <button type="button" th:onclick="del([[${item.id}]])" class="btn btn-block bg-gradient-danger btn-sm">删除</button>
+                      </td>
+                    </tr>
+                  </th:block>
+                  <tr th:if="${#lists.isEmpty(page.list)}">
+                    <td colspan="7" class="text-center text-muted">暂无令牌，请点击右上角「新增令牌」创建</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+              <div th:replace="common/page.html"></div>
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div th:replace="common/footer.html"></div>
+
+</div>
+<!-- ./wrapper -->
+
+<!-- 新增令牌弹窗 -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="background:#0f1530;color:#e2e8f0;border:1px solid rgba(99,102,241,0.25);border-radius:14px;">
+      <form th:action="@{/apiToken/save}" method="post">
+        <div class="modal-header" style="border-bottom:1px solid rgba(148,163,184,0.15);">
+          <h5 class="modal-title" style="color:#a5b4fc;">新增 API 令牌</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#e2e8f0;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label style="color:#94a3b8;">令牌名称</label>
+            <input type="text" class="form-control" name="name" placeholder="例如：监控大屏对接 / 钉钉机器人" required>
+          </div>
+          <div class="form-group">
+            <label style="color:#94a3b8;">过期时间（留空永不过期）</label>
+            <input type="date" class="form-control" name="expireDateStr">
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" name="status" value="1" checked>
+            <label class="form-check-label" style="color:#94a3b8;">启用</label>
+          </div>
+        </div>
+        <div class="modal-footer" style="border-top:1px solid rgba(148,163,184,0.15);">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function showAdd() {
+    $("#addModal").modal("show");
+}
+function regenerate(id) {
+    if (confirm("确认重新生成该令牌？旧令牌将立即失效。")) {
+        window.location.href = "/opsmonitor/apiToken/regenerate?id=" + id;
+    }
+}
+function del(id) {
+    if (confirm("确认删除该令牌？使用该令牌的第三方将无法访问。")) {
+        window.location.href = "/opsmonitor/apiToken/del?id=" + id;
+    }
+}
+</script>
+
+</body>
+</html>

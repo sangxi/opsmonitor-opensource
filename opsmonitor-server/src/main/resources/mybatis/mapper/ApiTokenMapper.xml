@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.opsmonitor.mapper.ApiTokenMapper">
+	<resultMap id="resultMap" type="com.opsmonitor.entity.ApiToken">
+		<id column="ID" property="id" jdbcType="CHAR" />
+		<result column="TOKEN" property="token" jdbcType="CHAR" />
+		<result column="NAME" property="name" jdbcType="CHAR" />
+		<result column="STATUS" property="status" jdbcType="CHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EXPIRE_TIME" property="expireTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="tableColumnList">
+		ID,TOKEN, NAME, STATUS, CREATE_TIME,EXPIRE_TIME
+	</sql>
+
+	<sql id="queryByParams">
+		<if test="status != null and status != ''">
+			<![CDATA[ AND STATUS = #{status}]]>
+		</if>
+		<if test="name != null and name != ''">
+			<![CDATA[ AND NAME LIKE  CONCAT('%',#{name},'%')]]>
+		</if>
+	</sql>
+
+	<select id="selectById" resultMap="resultMap" parameterType="java.lang.String">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM OPEN_API_TOKEN WHERE ID=#{id}
+	</select>
+
+	<select id="selectByToken" resultMap="resultMap" parameterType="java.lang.String">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM OPEN_API_TOKEN WHERE TOKEN=#{token} AND STATUS='1'
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		DELETE FROM OPEN_API_TOKEN WHERE ID = #{id}
+	</delete>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM OPEN_API_TOKEN WHERE ID IN
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<insert id="save" parameterType="com.opsmonitor.entity.ApiToken">
+		INSERT INTO OPEN_API_TOKEN
+    	<trim prefix="(" suffix=")" suffixOverrides="," >
+      		<if test="id != null" >ID,</if>
+      		<if test="token != null" >TOKEN,</if>
+      		<if test="name != null" >NAME,</if>
+      		<if test="status != null" >STATUS,</if>
+      		<if test="createTime != null" >CREATE_TIME,</if>
+      		<if test="expireTime != null" >EXPIRE_TIME</if>
+    	</trim>
+    	<trim prefix="values (" suffix=")" suffixOverrides="," >
+      		<if test="id != null" >#{id},</if>
+      		<if test="token != null" >#{token},</if>
+      		<if test="name != null" >#{name},</if>
+      		<if test="status != null" >#{status},</if>
+      		<if test="createTime != null" >#{createTime},</if>
+      		<if test="expireTime != null" >#{expireTime}</if>
+    	</trim>
+	</insert>
+
+	<update id="updateById" parameterType="com.opsmonitor.entity.ApiToken">
+		UPDATE OPEN_API_TOKEN
+		<set>
+			<if test="token != null">TOKEN=#{token},</if>
+			<if test="name != null">NAME=#{name},</if>
+			<if test="status != null">STATUS=#{status},</if>
+			<if test="expireTime != null">EXPIRE_TIME=#{expireTime}</if>
+		</set>
+		WHERE ID=#{id}
+	</update>
+
+	<select id="countByParams" parameterType="map" resultType="java.lang.Integer">
+		SELECT count(*)  FROM OPEN_API_TOKEN t
+		<where>
+			<include refid="queryByParams" />
+		</where>
+	</select>
+
+	<select id="selectAllByParams" parameterType="map" resultMap="resultMap">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM OPEN_API_TOKEN t
+		<where>
+			<include refid="queryByParams" />
+		</where>
+		 ORDER BY CREATE_TIME DESC
+	</select>
+
+	<select id="selectByParams" parameterType="map" resultMap="resultMap">
+		SELECT
+		<include refid="tableColumnList" />
+		FROM OPEN_API_TOKEN
+		<where>
+			<include refid="queryByParams" />
+		</where>
+		 ORDER BY CREATE_TIME DESC
+	</select>
+</mapper>

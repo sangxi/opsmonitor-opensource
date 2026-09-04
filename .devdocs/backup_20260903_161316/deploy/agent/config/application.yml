@@ -1,0 +1,29 @@
+# OpsMonitor Agent 外部配置文件
+# 部署时通过环境变量覆盖以下 ${...} 占位符
+
+server:
+  port: 9998
+  servlet:
+    context-path: /opsmonitor-agent
+
+spring:
+  application:
+    name: opsmonitor-agent
+
+# 日志
+logging:
+  file:
+    path: /app/logs
+    name: /app/logs/opsmonitor-agent.log
+  level:
+    root: INFO
+    com.wgcloud: INFO
+
+# 自定义参数
+base:
+  # Server 端访问地址（容器间通信用容器名，外部部署用实际 IP）
+  serverUrl: ${SERVER_URL:http://localhost:9999}
+  # 本机 IP（为空时自动获取，部署在宿主机时建议填写实际 IP）
+  bindIp: ${BIND_IP:}
+  # 通信 token，必须与 Server 端的 params.wgToken 保持一致
+  wgToken: ${WGTOKEN:opsmonitor}

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <div  th:replace="common/header.html"></div>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div th:replace="common/chart.html"></div>
+
+<div class="wrapper">
+
+  <div th:replace="common/navbar.html"></div>
+
+  <div th:replace="common/aside.html"></div>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper" style="font-size: 0.9rem">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>告警中心</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a th:href="@{/dash/main}">首页</a></li>
+              <li class="breadcrumb-item active">告警中心</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+
+        <!-- 告警状态概览卡 -->
+        <div class="row">
+          <div class="col-md-4 col-sm-6 col-12">
+            <div class="info-box bg-gradient-danger">
+              <span class="info-box-icon"><i class="fas fa-exclamation-triangle"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">未处理告警</span>
+                <span class="info-box-number" th:text="${state0}">0</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 col-12">
+            <div class="info-box bg-gradient-success">
+              <span class="info-box-icon"><i class="fas fa-check-circle"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">已处理告警</span>
+                <span class="info-box-number" th:text="${state1}">0</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 col-12">
+            <div class="info-box bg-gradient-secondary">
+              <span class="info-box-icon"><i class="fas fa-eye-slash"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">已忽略告警</span>
+                <span class="info-box-number" th:text="${state2}">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">告警记录</h3>
+
+                <div class="float-sm-right">
+                  <div class="btn-group">
+                    <a th:href="@{/alarm/list}" class="btn btn-sm btn-default">全部</a>
+                    <a th:href="@{/alarm/list?state=0}" class="btn btn-sm btn-danger">未处理</a>
+                    <a th:href="@{/alarm/list?state=1}" class="btn btn-sm btn-success">已处理</a>
+                    <a th:href="@{/alarm/list?state=2}" class="btn btn-sm btn-secondary">已忽略</a>
+                  </div>
+                  <button type="button" class="btn btn-sm bg-gradient-primary" onclick="handleAll()">全部标记已处理</button>
+                  <a href="/opsmonitor/export/alarms" class="btn btn-sm btn-outline-info ml-1"><i class="fas fa-file-csv"></i> 导出告警</a>
+                </div>
+
+                <div class="float-sm-right mr-2">
+                  <!-- SEARCH FORM -->
+                  <form class="form-inline ml-3" th:action="@{'/alarm/list'}">
+                    <input type="hidden" name="state" th:value="${alarmRecord.state}" />
+                    <select class="form-control form-control-sm mr-1" name="alarmType" onchange="this.form.submit()">
+                      <option value="">全部类型</option>
+                      <option value="cpu" th:selected="${alarmRecord.alarmType == 'cpu'}">CPU 告警</option>
+                      <option value="mem" th:selected="${alarmRecord.alarmType == 'mem'}">内存告警</option>
+                      <option value="disk" th:selected="${alarmRecord.alarmType == 'disk'}">磁盘告警</option>
+                      <option value="hostdown" th:selected="${alarmRecord.alarmType == 'hostdown'}">主机下线</option>
+                      <option value="appdown" th:selected="${alarmRecord.alarmType == 'appdown'}">进程下线</option>
+                      <option value="heath" th:selected="${alarmRecord.alarmType == 'heath'}">服务接口</option>
+                      <option value="intrusion" th:selected="${alarmRecord.alarmType == 'intrusion'}">入侵检测</option>
+                    </select>
+                    <div class="input-group input-group-sm">
+                      <input class="form-control" id="title" name="title" autocomplete="off" th:value="${alarmRecord.title}" type="text" placeholder="搜索标题/内容">
+                      <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                          <i class="fas fa-search"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table class="table table-bordered table-hover">
+                  <thead>
+                  <tr>
+                    <th style="width: 50px">序号</th>
+                    <th style="width: 130px">类型</th>
+                    <th>标题</th>
+                    <th style="width: 130px">主机</th>
+                    <th style="width: 90px">级别</th>
+                    <th style="width: 90px">状态</th>
+                    <th style="width: 160px">时间</th>
+                    <th style="width: 140px">操作</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <th:block th:each="item,iterStat : ${page.list}">
+                    <tr>
+                      <td th:text="${iterStat.index+1}">1</td>
+                      <td>
+                        <span th:switch="${item.alarmType}">
+                          <span th:case="'cpu'" class="badge badge-warning">CPU</span>
+                          <span th:case="'mem'" class="badge badge-info">内存</span>
+                          <span th:case="'disk'" class="badge badge-primary">磁盘</span>
+                          <span th:case="'hostdown'" class="badge badge-danger">主机下线</span>
+                          <span th:case="'appdown'" class="badge badge-danger">进程下线</span>
+                          <span th:case="'heath'" class="badge badge-secondary">服务接口</span>
+                          <span th:case="'intrusion'" class="badge badge-dark">入侵</span>
+                          <span th:case="*" th:text="${item.alarmType}">其他</span>
+                        </span>
+                      </td>
+                      <td>
+                        <a href="javascript:void(0)" onclick="viewDetail('[[${item.id}]]')" th:text="${item.title}">标题</a>
+                      </td>
+                      <td th:text="${item.hostname}">host</td>
+                      <td>
+                        <span th:switch="${item.level}">
+                          <span th:case="'error'" class="badge badge-danger">严重</span>
+                          <span th:case="'warn'" class="badge badge-warning">警告</span>
+                          <span th:case="*" class="badge badge-info">提示</span>
+                        </span>
+                      </td>
+                      <td>
+                        <span th:switch="${item.state}">
+                          <span th:case="'0'" class="badge badge-danger">未处理</span>
+                          <span th:case="'1'" class="badge badge-success">已处理</span>
+                          <span th:case="*" class="badge badge-secondary">已忽略</span>
+                        </span>
+                      </td>
+                      <td th:text="${#dates.format(item.createTime,'yyyy-MM-dd HH:mm:ss')}">time</td>
+                      <td>
+                        <button type="button" th:if="${item.state == '0'}" th:onclick="handle([[${item.id}]],'1')" class="btn btn-block bg-gradient-success btn-sm">标记已处理</button>
+                        <button type="button" th:if="${item.state == '0'}" th:onclick="handle([[${item.id}]],'2')" class="btn btn-block bg-gradient-secondary btn-sm">忽略</button>
+                        <button type="button" th:if="${item.state != '0'}" th:onclick="del([[${item.id}]])" class="btn btn-block bg-gradient-danger btn-sm">删除</button>
+                      </td>
+                    </tr>
+                  </th:block>
+                  <tr th:if="${#lists.isEmpty(page.list)}">
+                    <td colspan="8" class="text-center text-muted">暂无告警记录</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+              <div th:replace="common/page.html"></div>
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div th:replace="common/footer.html"></div>
+
+</div>
+<!-- ./wrapper -->
+
+<!-- 详情弹窗 -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content" style="background:#0f1530;color:#e2e8f0;border:1px solid rgba(99,102,241,0.25);border-radius:14px;">
+      <div class="modal-header" style="border-bottom:1px solid rgba(148,163,184,0.15);">
+        <h5 class="modal-title" id="detailTitle" style="color:#a5b4fc;">告警详情</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#e2e8f0;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="detailContent" style="font-size:0.9rem;line-height:1.8;word-break:break-all;"></div>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{'/static/js/alarm.js'}"></script>
+
+</body>
+</html>

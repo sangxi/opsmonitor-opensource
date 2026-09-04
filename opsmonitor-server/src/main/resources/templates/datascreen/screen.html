@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpsMonitor 监控大屏</title>
+<script th:src="@{'/common/echarts/echarts.min.js'}"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body {
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(99,102,241,.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(139,92,246,.12) 0%, transparent 55%),
+                #060a18;
+    color:#e2e8f5;
+    font-family:'PingFang SC','Microsoft YaHei','Segoe UI',Arial,sans-serif;
+  }
+  /* 网格背景 */
+  body::before {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      linear-gradient(rgba(99,102,241,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,.04) 1px, transparent 1px);
+    background-size:48px 48px;
+  }
+  #screen { position:relative; z-index:1; width:100%; height:100%; }
+
+  /* 顶部标题栏 */
+  .ds-header {
+    display:flex; align-items:center; justify-content:space-between;
+    height:64px; padding:0 32px;
+    background:linear-gradient(180deg, rgba(30,41,79,.6), transparent);
+    border-bottom:1px solid rgba(99,102,241,.25);
+    position:relative;
+  }
+  .ds-header::after {
+    content:''; position:absolute; left:50%; bottom:-1px; transform:translateX(-50%);
+    width:320px; height:2px; background:linear-gradient(90deg,transparent,#6366f1,#a855f7,transparent);
+    filter:blur(.5px);
+  }
+  .ds-title {
+    font-size:24px; font-weight:700; letter-spacing:4px;
+    background:linear-gradient(90deg,#a5b4fc,#818cf8,#c084fc);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    text-shadow:0 0 30px rgba(99,102,241,.35);
+  }
+  .ds-title small { font-size:12px; font-weight:400; letter-spacing:2px; -webkit-text-fill-color:#64748b; margin-left:12px; }
+  .ds-header-right { display:flex; align-items:center; gap:18px; font-size:13px; color:#94a0bd; }
+  .ds-btn {
+    background:rgba(99,102,241,.15); border:1px solid rgba(99,102,241,.4);
+    color:#c7d2fe; border-radius:8px; padding:6px 14px; cursor:pointer;
+    font-size:13px; transition:all .2s;
+  }
+  .ds-btn:hover { background:rgba(99,102,241,.3); box-shadow:0 0 16px rgba(99,102,241,.35); }
+
+  /* 主体网格 */
+  .ds-body {
+    display:grid; gap:14px; padding:14px 20px 18px;
+    height:calc(100% - 64px);
+    grid-template-rows:auto 1fr 1.1fr;
+  }
+  /* 指标卡行 */
+  .ds-kpis {
+    display:grid; gap:12px;
+    grid-template-columns:repeat(8,1fr);
+  }
+  .kpi {
+    background:linear-gradient(180deg, rgba(30,41,79,.55), rgba(15,23,42,.6));
+    border:1px solid rgba(99,102,241,.22); border-radius:12px;
+    padding:12px 14px; position:relative; overflow:hidden;
+    transition:transform .2s, box-shadow .2s;
+  }
+  .kpi:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(2,6,23,.5); }
+  .kpi .label { font-size:12px; color:#94a0bd; margin-bottom:6px; }
+  .kpi .value { font-size:26px; font-weight:700; line-height:1; }
+  .kpi .sub { font-size:11px; color:#64748b; margin-top:6px; }
+  .kpi .bar { position:absolute; left:0; bottom:0; height:2px; width:100%; opacity:.6; }
+  .c-indigo{color:#818cf8} .c-green{color:#34d399} .c-red{color:#f87171} .c-amber{color:#fbbf24}
+  .c-cyan{color:#22d3ee} .c-purple{color:#c084fc} .c-pink{color:#f472b6} .c-blue{color:#60a5fa}
+
+  /* 图表面板 */
+  .ds-grid { display:grid; gap:14px; grid-template-columns:1fr 1fr 1.2fr; }
+  .ds-grid.bottom { grid-template-columns:1fr 1.3fr 1fr; }
+  .panel {
+    background:linear-gradient(180deg, rgba(30,41,79,.5), rgba(15,23,42,.55));
+    border:1px solid rgba(99,102,241,.18); border-radius:12px;
+    display:flex; flex-direction:column; overflow:hidden;
+    min-height:0;
+  }
+  .panel .p-head {
+    display:flex; align-items:center; padding:10px 16px;
+    font-size:14px; font-weight:600; color:#c7d2fe;
+    border-bottom:1px solid rgba(99,102,241,.15);
+  }
+  .panel .p-head .dot { width:6px; height:6px; border-radius:50%; background:#6366f1; margin-right:8px; box-shadow:0 0 8px #6366f1; }
+  .panel .p-body { flex:1; min-height:0; position:relative; }
+  .chart { width:100%; height:100%; }
+
+  /* 列表样式 */
+  .log-list { padding:8px 14px; overflow:hidden; height:100%; }
+  .log-item {
+    display:flex; align-items:center; gap:10px;
+    padding:7px 0; border-bottom:1px dashed rgba(99,102,241,.12);
+    font-size:12.5px; color:#b8c2e0;
+  }
+  .log-item .t { color:#64748b; white-space:nowrap; font-size:11.5px; }
+  .log-item .h { color:#93c5fd; white-space:nowrap; max-width:120px; overflow:hidden; text-overflow:ellipsis; }
+  .log-item .c { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .tag { padding:1px 8px; border-radius:6px; font-size:11px; white-space:nowrap; }
+  .tag.ok { background:rgba(34,197,94,.15); color:#4ade80; border:1px solid rgba(34,197,94,.3); }
+  .tag.err { background:rgba(239,68,68,.15); color:#f87171; border:1px solid rgba(239,68,68,.3); }
+  .tag.warn{ background:rgba(245,158,11,.15); color:#fbbf24; border:1px solid rgba(245,158,11,.3); }
+
+  .heath-item {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:9px 14px; border-bottom:1px dashed rgba(99,102,241,.12);
+    font-size:13px;
+  }
+  .heath-item .name { color:#c7d2fe; max-width:60%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  /* 空态 */
+  .empty { display:flex; align-items:center; justify-content:center; height:100%; color:#475569; font-size:13px; flex-direction:column; gap:8px; }
+
+  /* 呼吸边框动画 */
+  @keyframes borderPulse {
+    0%,100% { border-color:rgba(99,102,241,.18); }
+    50% { border-color:rgba(99,102,241,.45); }
+  }
+  .panel.pulse { animation:borderPulse 4s ease-in-out infinite; }
+
+  @media (max-width:1200px) {
+    .ds-kpis { grid-template-columns:repeat(4,1fr); }
+    .ds-grid, .ds-grid.bottom { grid-template-columns:1fr 1fr; }
+    .ds-title { font-size:18px; }
+  }
+</style>
+</head>
+<body>
+<div id="screen">
+  <!-- 顶部 -->
+  <div class="ds-header">
+    <div class="ds-title">OpsMonitor 监控大屏<small>REAL-TIME OPERATIONS CENTER</small></div>
+    <div class="ds-header-right">
+      <span id="dsTime"></span>
+      <button class="ds-btn" onclick="toggleFullscreen()"><i class="ds-ico">⛶</i> 全屏</button>
+      <button class="ds-btn" onclick="loadAll()">刷新</button>
+    </div>
+  </div>
+
+  <div class="ds-body">
+    <!-- 指标卡行 -->
+    <div class="ds-kpis" id="kpiRow">
+      <div class="kpi"><div class="label">监控主机</div><div class="value c-indigo" id="kpiHost">--</div><div class="sub">在线 <span id="kpiOnline">--</span> / 离线 <span id="kpiOffline">--</span></div><div class="bar" style="background:linear-gradient(90deg,#6366f1,#22d3ee)"></div></div>
+      <div class="kpi"><div class="label">平均 CPU</div><div class="value c-cyan" id="kpiCpu">--</div><div class="sub">CPU&gt;80% <span id="kpiCpuHigh">--</span> 台</div><div class="bar" style="background:linear-gradient(90deg,#22d3ee,#6366f1)"></div></div>
+      <div class="kpi"><div class="label">平均内存</div><div class="value c-purple" id="kpiMem">--</div><div class="sub">内存&gt;80% <span id="kpiMemHigh">--</span> 台</div><div class="bar" style="background:linear-gradient(90deg,#8b5cf6,#c084fc)"></div></div>
+      <div class="kpi"><div class="label">监控进程</div><div class="value c-blue" id="kpiApp">--</div><div class="sub">高负载 <span id="kpiAppHigh">--</span> 个</div><div class="bar" style="background:linear-gradient(90deg,#60a5fa,#818cf8)"></div></div>
+      <div class="kpi"><div class="label">服务接口</div><div class="value c-green" id="kpiHeath">--</div><div class="sub">正常 <span id="kpiHeathOk">--</span> / 异常 <span id="kpiHeathErr">--</span></div><div class="bar" style="background:linear-gradient(90deg,#34d399,#22d3ee)"></div></div>
+      <div class="kpi"><div class="label">数据源</div><div class="value c-amber" id="kpiDb">--</div><div class="sub">数据表 <span id="kpiDbSum">--</span> 条</div><div class="bar" style="background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div>
+      <div class="kpi"><div class="label">系统日志</div><div class="value c-pink" id="kpiLog">--</div><div class="sub">最近滚动刷新</div><div class="bar" style="background:linear-gradient(90deg,#f472b6,#f59e0b)"></div></div>
+      <div class="kpi"><div class="label">运行状态</div><div class="value c-green" id="kpiStatus">--</div><div class="sub" id="kpiStatusSub">数据加载中</div><div class="bar" style="background:linear-gradient(90deg,#22c55e,#4ade80)"></div></div>
+    </div>
+
+    <!-- 中部图表 -->
+    <div class="ds-grid">
+      <div class="panel pulse"><div class="p-head"><span class="dot"></span>系统类型分布</div><div class="p-body"><div class="chart" id="chartOs"></div></div></div>
+      <div class="panel pulse"><div class="p-head"><span class="dot"></span>主机运行状态</div><div class="p-body"><div class="chart" id="chartStatus"></div></div></div>
+      <div class="panel pulse"><div class="p-head"><span class="dot"></span>主机负载 TOP10</div><div class="p-body"><div class="chart" id="chartPerf"></div></div></div>
+    </div>
+
+    <!-- 底部 -->
+    <div class="ds-grid bottom">
+      <div class="panel"><div class="p-head"><span class="dot"></span>服务接口状态</div><div class="p-body" id="heathPanel"><div class="empty">加载中...</div></div></div>
+      <div class="panel"><div class="p-head"><span class="dot"></span>系统日志滚动</div><div class="p-body"><div class="log-list" id="logPanel"><div class="empty">加载中...</div></div></div></div>
+      <div class="panel"><div class="p-head"><span class="dot"></span>资源使用排行</div><div class="p-body"><div class="chart" id="chartMemTop"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var ctx = (typeof window.opsCtxPath !== 'undefined' && window.opsCtxPath) ? window.opsCtxPath : '/opsmonitor';
+var charts = {};
+var lastData = null;
+
+// ---------- 时间 ----------
+function tick() {
+  var el = document.getElementById('dsTime');
+  if (!el) return;
+  var d = new Date();
+  function p(n){ return (n<10?'0':'')+n; }
+  el.textContent = d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+}
+setInterval(tick, 1000); tick();
+
+// ---------- 全屏 ----------
+function toggleFullscreen() {
+  if (document.fullscreenElement) { document.exitFullscreen(); }
+  else { document.documentElement.requestFullscreen(); }
+}
+
+// ---------- ECharts 初始化 ----------
+function initChart(id) {
+  var el = document.getElementById(id);
+  if (!el) return null;
+  if (charts[id]) { charts[id].dispose(); }
+  var c = echarts.init(el);
+  charts[id] = c;
+  return c;
+}
+
+// ---------- 图表通用样式 ----------
+var AXIS_TEXT = '#94a0bd';
+var AXIS_LINE = 'rgba(99,102,241,.25)';
+
+// ---------- 渲染各图 ----------
+function renderOs(data) {
+  var c = initChart('chartOs'); if (!c) return;
+  c.setOption({
+    backgroundColor:'transparent',
+    tooltip:{ trigger:'item', backgroundColor:'rgba(15,23,42,.95)', borderColor:'rgba(99,102,241,.4)', textStyle:{color:'#e2e8f5'} },
+    legend:{ bottom:0, textStyle:{color:AXIS_TEXT, fontSize:11} },
+    color:['#6366f1','#22d3ee','#a855f7','#34d399','#f59e0b','#60a5fa','#f472b6','#c084fc','#94a0bd'],
+    series:[{
+      type:'pie', radius:['42%','66%'], center:['50%','46%'],
+      itemStyle:{ borderRadius:6, borderColor:'#060a18', borderWidth:2 },
+      label:{ color:AXIS_TEXT, fontSize:11 },
+      emphasis:{ label:{ color:'#fff', fontWeight:'bold' } },
+      data:data.length ? data : [{name:'暂无数据', value:0}]
+    }]
+  });
+}
+function renderStatus(data) {
+  var c = initChart('chartStatus'); if (!c) return;
+  c.setOption({
+    backgroundColor:'transparent',
+    tooltip:{ trigger:'item', backgroundColor:'rgba(15,23,42,.95)', borderColor:'rgba(99,102,241,.4)', textStyle:{color:'#e2e8f5'} },
+    legend:{ bottom:0, textStyle:{color:AXIS_TEXT, fontSize:11} },
+    series:[{
+      type:'pie', radius:['45%','68%'], center:['50%','46%'],
+      itemStyle:{ borderRadius:6, borderColor:'#060a18', borderWidth:2 },
+      label:{ color:AXIS_TEXT, fontSize:11 },
+      data:(data&&data.length)?data:[{name:'暂无', value:0, color:'#94a0bd'}]
+    }]
+  });
+}
+function renderPerf(data) {
+  var c = initChart('chartPerf'); if (!c) return;
+  var names = (data||[]).map(function(d){ return d.hostname||''; }).reverse();
+  var cpus  = (data||[]).map(function(d){ return d.cpu; }).reverse();
+  var mems  = (data||[]).map(function(d){ return d.mem; }).reverse();
+  c.setOption({
+    backgroundColor:'transparent',
+    tooltip:{ trigger:'axis', backgroundColor:'rgba(15,23,42,.95)', borderColor:'rgba(99,102,241,.4)', textStyle:{color:'#e2e8f5'},
+      axisPointer:{ type:'shadow' } },
+    legend:{ top:4, textStyle:{color:AXIS_TEXT, fontSize:11} },
+    grid:{ left:8, right:14, top:28, bottom:4, containLabel:true },
+    xAxis:{ type:'value', max:100, axisLabel:{color:AXIS_TEXT, fontSize:10, formatter:'{value}%'}, splitLine:{lineStyle:{color:'rgba(99,102,241,.12)'}} },
+    yAxis:{ type:'category', data:names, axisLabel:{color:AXIS_TEXT, fontSize:10}, axisLine:{lineStyle:{color:AXIS_LINE}}, axisTick:{show:false} },
+    series:[
+      { name:'CPU%', type:'bar', data:cpus, barWidth:7, itemStyle:{ borderRadius:[0,4,4,0], color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#3b82f6'},{offset:1,color:'#22d3ee'}]) } },
+      { name:'内存%', type:'bar', data:mems, barWidth:7, itemStyle:{ borderRadius:[0,4,4,0], color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#8b5cf6'},{offset:1,color:'#c084fc'}]) } }
+    ]
+  });
+}
+function renderMemTop(data) {
+  var c = initChart('chartMemTop'); if (!c) return;
+  // 按内存降序取 TOP
+  var sorted = (data||[]).slice().sort(function(a,b){ return (b.mem||0)-(a.mem||0); });
+  var names = sorted.slice(0,8).map(function(d){ return d.hostname||''; }).reverse();
+  var vals  = sorted.slice(0,8).map(function(d){ return d.mem; }).reverse();
+  c.setOption({
+    backgroundColor:'transparent',
+    tooltip:{ trigger:'axis', backgroundColor:'rgba(15,23,42,.95)', borderColor:'rgba(99,102,241,.4)', textStyle:{color:'#e2e8f5'} },
+    grid:{ left:8, right:14, top:20, bottom:4, containLabel:true },
+    xAxis:{ type:'value', max:100, axisLabel:{color:AXIS_TEXT, fontSize:10, formatter:'{value}%'}, splitLine:{lineStyle:{color:'rgba(99,102,241,.12)'}} },
+    yAxis:{ type:'category', data:names, axisLabel:{color:AXIS_TEXT, fontSize:10}, axisLine:{lineStyle:{color:AXIS_LINE}}, axisTick:{show:false} },
+    series:[{
+      name:'内存使用率', type:'bar', data:vals, barWidth:9,
+      itemStyle:{ borderRadius:[0,5,5,0], color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#f59e0b'},{offset:1,color:'#f472b6'}]) },
+      label:{ show:true, position:'right', color:'#e2e8f5', fontSize:10, formatter:'{c}%' }
+    }]
+  });
+}
+
+// ---------- 列表渲染 ----------
+function renderHeath(list) {
+  var el = document.getElementById('heathPanel');
+  if (!list || !list.length) { el.innerHTML = '<div class="empty">暂无服务接口监控数据</div>'; return; }
+  var html = '';
+  list.forEach(function(h){
+    var cls = h.status === '200' ? 'ok' : 'err';
+    var txt = h.status === '200' ? '正常' : ('异常 '+h.status);
+    html += '<div class="heath-item"><span class="name">'+h.name+'</span><span class="tag '+cls+'">'+txt+'</span></div>';
+  });
+  el.innerHTML = html;
+}
+function renderLogs(list) {
+  var el = document.getElementById('logPanel');
+  if (!list || !list.length) { el.innerHTML = '<div class="empty">暂无系统日志</div>'; return; }
+  var html = '';
+  list.forEach(function(l){
+    var cls = (l.state==='0'||l.state==='1') ? 'ok' : 'warn';
+    html += '<div class="log-item"><span class="t">'+l.time+'</span><span class="h">'+l.host+'</span><span class="c" title="'+l.content+'">'+l.content+'</span><span class="tag '+cls+'">'+(l.state==='0'?'正常':(l.state==='1'?'警告':'异常'))+'</span></div>';
+  });
+  el.innerHTML = html;
+}
+
+// ---------- 加载数据 ----------
+function loadAll() {
+  var url = ctx + '/datascreen/data';
+  fetch(url, {method:'GET', credentials:'same-origin'})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error) { throw new Error(d.error); }
+      lastData = d;
+      // KPI
+      var st = document.getElementById('kpiStatus');
+      var stSub = document.getElementById('kpiStatusSub');
+      if (d.offlineHost > 0) {
+        st.textContent = '告警'; st.className='value c-red';
+        stSub.textContent = '有 '+d.offlineHost+' 台主机离线';
+      } else {
+        st.textContent = '正常'; st.className='value c-green';
+        stSub.textContent = '全部主机在线';
+      }
+      document.getElementById('kpiHost').textContent = d.totalHost;
+      document.getElementById('kpiOnline').textContent = d.onlineHost;
+      document.getElementById('kpiOffline').textContent = d.offlineHost;
+      document.getElementById('kpiCpu').textContent = d.avgCpu+'%';
+      document.getElementById('kpiCpuHigh').textContent = d.cpuHigh;
+      document.getElementById('kpiMem').textContent = d.avgMem+'%';
+      document.getElementById('kpiMemHigh').textContent = d.memHigh;
+      document.getElementById('kpiApp').textContent = d.totalApp;
+      document.getElementById('kpiAppHigh').textContent = d.appHigh;
+      document.getElementById('kpiHeath').textContent = d.totalHeath;
+      document.getElementById('kpiHeathOk').textContent = d.heathOk;
+      document.getElementById('kpiHeathErr').textContent = d.heathErr;
+      document.getElementById('kpiDb').textContent = d.dbInfoSize;
+      document.getElementById('kpiDbSum').textContent = d.dbTableSum;
+      document.getElementById('kpiLog').textContent = d.logList ? d.logList.length : 0;
+      // 图表
+      renderOs(d.osList || []);
+      renderStatus(d.statusList || []);
+      renderPerf(d.hostPerf || []);
+      renderMemTop(d.hostPerf || []);
+      // 列表
+      renderHeath(d.heathDetail || []);
+      renderLogs(d.logList || []);
+    })
+    .catch(function(e){
+      var st = document.getElementById('kpiStatus');
+      if (st) { st.textContent = '错误'; st.className='value c-red'; document.getElementById('kpiStatusSub').textContent = '数据加载失败'; }
+      console.error('大屏数据加载失败', e);
+    });
+}
+
+// 首次加载 + 30s 轮询
+loadAll();
+setInterval(loadAll, 30000);
+window.addEventListener('resize', function(){
+  Object.keys(charts).forEach(function(k){ if(charts[k]) charts[k].resize(); });
+});
+</script>
+</body>
+</html>

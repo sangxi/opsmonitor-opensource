@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <div  th:replace="common/header.html"></div>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div th:replace="common/chart.html"></div>
+
+<div class="wrapper">
+
+  <div th:replace="common/navbar.html"></div>
+
+  <div th:replace="common/aside.html"></div>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper" style="font-size: 0.9rem">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>操作审计</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a th:href="@{/dash/main}">首页</a></li>
+              <li class="breadcrumb-item active">操作审计</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">审计日志</h3>
+
+                <div class="float-sm-right">
+                  <a th:href="@{/audit/export}" class="btn btn-sm bg-gradient-success">导出 CSV</a>
+                  <button type="button" class="btn btn-sm bg-gradient-danger" onclick="clearAudit()">清空</button>
+                </div>
+
+                <div class="float-sm-right mr-2">
+                  <!-- SEARCH FORM -->
+                  <form class="form-inline ml-3" th:action="@{'/audit/list'}">
+                    <select class="form-control form-control-sm mr-1" name="action" onchange="this.form.submit()">
+                      <option value="">全部操作</option>
+                      <option value="login" th:selected="${auditLog.action == 'login'}">登录</option>
+                      <option value="logout" th:selected="${auditLog.action == 'logout'}">登出</option>
+                      <option value="config" th:selected="${auditLog.action == 'config'}">配置变更</option>
+                      <option value="export" th:selected="${auditLog.action == 'export'}">导出</option>
+                      <option value="api" th:selected="${auditLog.action == 'api'}">API 调用</option>
+                      <option value="other" th:selected="${auditLog.action == 'other'}">其他</option>
+                    </select>
+                    <div class="input-group input-group-sm">
+                      <input class="form-control" id="account" name="account" autocomplete="off" th:value="${auditLog.account}" type="text" placeholder="账号">
+                      <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                          <i class="fas fa-search"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table class="table table-bordered table-hover">
+                  <thead>
+                  <tr>
+                    <th style="width: 50px">序号</th>
+                    <th style="width: 160px">时间</th>
+                    <th style="width: 100px">账号</th>
+                    <th style="width: 100px">操作类型</th>
+                    <th>操作内容</th>
+                    <th style="width: 120px">来源IP</th>
+                    <th style="width: 80px">结果</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <th:block th:each="item,iterStat : ${page.list}">
+                    <tr>
+                      <td th:text="${iterStat.index+1}">1</td>
+                      <td th:text="${#dates.format(item.createTime,'yyyy-MM-dd HH:mm:ss')}">time</td>
+                      <td th:text="${item.account}">admin</td>
+                      <td>
+                        <span th:switch="${item.action}">
+                          <span th:case="'login'" class="badge badge-primary">登录</span>
+                          <span th:case="'logout'" class="badge badge-secondary">登出</span>
+                          <span th:case="'config'" class="badge badge-warning">配置变更</span>
+                          <span th:case="'export'" class="badge badge-info">导出</span>
+                          <span th:case="'api'" class="badge badge-dark">API</span>
+                          <span th:case="*" class="badge badge-default">其他</span>
+                        </span>
+                      </td>
+                      <td th:text="${item.content}">content</td>
+                      <td th:text="${item.ip}">ip</td>
+                      <td>
+                        <span th:switch="${item.result}">
+                          <span th:case="'fail'" class="badge badge-danger">失败</span>
+                          <span th:case="*" class="badge badge-success">成功</span>
+                        </span>
+                      </td>
+                    </tr>
+                  </th:block>
+                  <tr th:if="${#lists.isEmpty(page.list)}">
+                    <td colspan="7" class="text-center text-muted">暂无审计日志</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+              <div th:replace="common/page.html"></div>
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div th:replace="common/footer.html"></div>
+
+</div>
+<!-- ./wrapper -->
+
+<script>
+function clearAudit() {
+    if (confirm("确认清空全部审计日志？")) {
+        window.location.href = "/opsmonitor/audit/clear";
+    }
+}
+</script>
+
+</body>
+</html>

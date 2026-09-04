@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <div  th:replace="common/header.html"></div>
+
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div th:replace="common/chart.html"></div>
+
+<div class="wrapper">
+
+  <div th:replace="common/navbar.html"></div>
+
+  <div th:replace="common/aside.html"></div>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper" style="font-size: 0.9rem">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1></h1>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">主机列表</h3>
+        <div class="card-tools">
+          <a href="/opsmonitor/export/hosts" class="btn btn-sm btn-outline-info mr-1"><i class="fas fa-file-csv"></i> 导出主机清单</a>
+          <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal-add-host">
+            <i class="fas fa-plus"></i> 新增主机
+          </button>
+        </div>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+
+        <!-- 筛选栏：全局搜索 + 分组筛选 -->
+        <div class="row mb-2">
+          <div class="col-md-8">
+            <form class="form-inline" action="/opsmonitor/dash/systemInfoList" method="get">
+              <input type="text" class="form-control form-control-sm mr-1" style="width:200px" name="hostName" th:value="${param.hostName != null ? param.hostName[0] : ''}" placeholder="搜索主机名 / IP">
+              <select class="form-control form-control-sm mr-1" style="width:160px" name="groupName" id="groupFilter" onchange="this.form.submit()">
+                <option value="">全部主机分组</option>
+                <th:block th:each="g : ${groupList}">
+                  <option th:value="${g}" th:text="${g}" th:selected="${g == currentGroup}"></option>
+                </th:block>
+              </select>
+              <button type="submit" class="btn btn-sm btn-primary">搜索</button>
+              <a th:href="@{'/dash/systemInfoList'}" class="btn btn-sm btn-default ml-1">重置</a>
+            </form>
+          </div>
+          <div class="col-md-4 text-right">
+            <span class="text-muted small">共 <b th:text="${page.total}">0</b> 台主机</span>
+          </div>
+        </div>
+
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th style="width: 60px">序号</th>
+            <th>IP</th>
+            <th>内存%</th>
+            <th>CPU%</th>
+            <th title="所有磁盘已使用%">磁盘%</th>
+            <th>分组</th>
+            <th>标签</th>
+            <th>更新时间</th>
+              <th>备注</th>
+              <th>操作</th>
+          </tr>
+          </thead>
+          <tbody>
+          <th:block th:each="item,iterStat : ${page.list}">
+            <tr>
+              <td th:text="${iterStat.index+1}">1</td>
+              <td>
+                  <th:block th:if="${item.state  == '2'}">
+                      <span title="超过10分钟未上报状态，可能已下线" style="color:red;font-weight: 500;"  th:text="${item.hostname}"></span>
+                  </th:block>
+                  <th:block th:if="${item.state  != '2'}">
+                      <span   th:text="${item.hostname}"></span>
+                  </th:block>
+              </td>
+              <td>
+                  <th:block th:if="${item.memPer >= 90}">
+                      <span class="badge bg-danger" th:text="${item.memPer}"></span>
+                  </th:block>
+                  <th:block th:if="${item.memPer < 90 && item.memPer >= 70  }">
+                      <span class="badge bg-warning" th:text="${item.memPer}"></span>
+                  </th:block>
+                  <th:block th:if="${item.memPer < 70  }">
+                      <span class="badge bg-primary" th:text="${item.memPer}"></span>
+                  </th:block>
+              </td>
+              <td>
+                  <th:block th:if="${item.cpuPer >= 90}">
+                      <span class="badge bg-danger" th:text="${item.cpuPer}"></span>
+                  </th:block>
+                  <th:block th:if="${item.cpuPer < 90 && item.cpuPer >= 70  }">
+                      <span class="badge bg-warning" th:text="${item.cpuPer}"></span>
+                  </th:block>
+                  <th:block th:if="${item.cpuPer < 70  }">
+                      <span class="badge bg-primary" th:text="${item.cpuPer}"></span>
+                  </th:block>
+              </td>
+                <td>
+                    <th:block th:if="${item.diskPer >= 90}">
+                        <span class="badge bg-danger" th:text="${item.diskPer}"></span>
+                    </th:block>
+                    <th:block th:if="${item.diskPer < 90 && item.diskPer >= 70  }">
+                        <span class="badge bg-warning" th:text="${item.diskPer}"></span>
+                    </th:block>
+                    <th:block th:if="${item.diskPer < 70  }">
+                        <span class="badge bg-primary" th:text="${item.diskPer}"></span>
+                    </th:block>
+                </td>
+              <td>
+                  <th:block th:if="${! #strings.isEmpty(item.groupName)}">
+                      <span class="badge bg-indigo" th:text="${item.groupName}"></span>
+                  </th:block>
+                  <th:block th:if="${#strings.isEmpty(item.groupName)}">
+                      <span class="text-muted">-</span>
+                  </th:block>
+              </td>
+              <td>
+                  <th:block th:if="${! #strings.isEmpty(item.tags)}">
+                      <th:block th:each="tag : ${#strings.arraySplit(item.tags, ',')}">
+                          <span class="badge badge-info mr-1" th:text="${tag}"></span>
+                      </th:block>
+                  </th:block>
+                  <th:block th:if="${#strings.isEmpty(item.tags)}">
+                      <span class="text-muted">-</span>
+                  </th:block>
+              </td>
+              <td th:text="${#dates.format(item.createTime,'yyyy-MM-dd HH:mm:ss')}">Update software</td>
+                <td th:text="${item.remark}"></td>
+              <td>
+                  <button type="button" class="btn btn-default btn-sm" data-toggle="modal" th:onclick="setHostRemark([[${item.id}]],[[${item.remark}]],[[${item.groupName}]],[[${item.tags}]])" data-target="#modal-default">
+                     编辑
+                  </button>
+                  <button type="button"  th:onclick="view([[${item.id}]])"  class="btn btn-primary btn-sm">系统信息</button>
+                  <button type="button"  th:onclick="viewChart([[${item.id}]])"  class="btn btn-primary btn-sm">图表</button>
+                  <button type="button"  th:onclick="viewApps([[${item.hostname}]])"  class="btn btn-primary btn-sm">进程</button>
+                  <button type="button"  th:onclick="del([[${item.id}]])"  class="btn bg-gradient-danger btn-sm">删除</button></td>
+
+            </tr>
+          </th:block>
+
+          </tbody>
+        </table>
+      </div>
+      <!-- /.card-body -->
+      <div th:replace="common/page.html"></div>
+    </div>
+    <!-- /.card -->
+
+
+  </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+
+    <div class="modal fade" id="modal-default">
+        <div class="modal-dialog">
+            <form method="post" id="form2" th:action="@{'/host/save'}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">编辑主机（分组 / 标签 / 备注）</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>主机分组</label>
+                        <input type="text" class="form-control" name="groupName" id="groupName" placeholder="例如：生产环境 / 测试环境 / 华南区">
+                    </div>
+                    <div class="form-group">
+                        <label>标签（逗号分隔）</label>
+                        <input type="text" class="form-control" name="tags" id="tags" placeholder="例如：web,nginx,负载高">
+                    </div>
+                    <div class="form-group">
+                        <label>备注</label>
+                        <input type="text" class="form-control" name="remark" id="remark" placeholder="备注信息">
+                    </div>
+                    <input type="hidden" id="id" name="id"/>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" onclick="ajaxSaveRemark()" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+  <div class="modal fade" id="modal-add-host">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h4 class="modal-title">新增主机</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  <div class="form-group">
+                      <label>主机IP / 名称</label>
+                      <input type="text" class="form-control" id="addHostname" autocomplete="off" placeholder="例如：192.168.1.100 或 web-01">
+                  </div>
+                  <div class="form-group">
+                      <label>主机分组</label>
+                      <input type="text" class="form-control" id="addGroup" autocomplete="off" placeholder="例如：生产环境">
+                  </div>
+                  <div class="form-group">
+                      <label>标签（逗号分隔）</label>
+                      <input type="text" class="form-control" id="addTags" autocomplete="off" placeholder="例如：web,nginx">
+                  </div>
+                  <div class="form-group">
+                      <label>备注</label>
+                      <input type="text" class="form-control" id="addRemark" autocomplete="off" placeholder="备注信息">
+                  </div>
+                  <p class="text-muted small mb-0">提示：手动添加后，需在目标主机部署探针(agent)并指向本服务端，才会自动上报 CPU、内存、磁盘等监控数据。</p>
+              </div>
+              <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                  <button type="button" class="btn btn-primary" onclick="addHost()">保存</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div th:replace="common/footer.html"></div>
+    <script th:src="@{'/static/js/jQuery/jquery.form.min.js'}" type="text/javascript" charset="utf-8"></script>
+
+</div>
+<!-- ./wrapper -->
+
+<script th:src="@{'/static/js/host.js'}"></script>
+
+</body>
+</html>

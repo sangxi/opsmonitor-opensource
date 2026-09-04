@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <div th:replace="common/header.html"></div>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <div th:replace="common/navbar.html"></div>
+  <div th:replace="common/aside.html"></div>
+
+  <!-- Content Wrapper -->
+  <div class="content-wrapper">
+    <!-- Content Header -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>系统配置</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+
+        <!-- 系统标识配置 -->
+        <div class="card card-primary">
+          <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-tag"></i> &nbsp;系统标识配置</h3>
+          </div>
+          <form th:action="@{'/systemConfig/save'}" method="post">
+            <div class="card-body">
+              <div th:each="config : ${configs}"
+                   th:if="${config.configKey == 'systemName' or config.configKey == 'systemShortName' or config.configKey == 'copyright'}"
+                   class="form-group">
+                <label th:for="${config.configKey}">
+                  <i class="fas fa-pen"></i>
+                  <span th:text="${config.configDesc}">配置项</span>
+                </label>
+                <input type="hidden" th:name="id" th:value="${config.id}" />
+                <input type="text" class="form-control"
+                       th:name="configValue"
+                       th:value="${config.configValue}"
+                       th:id="${config.configKey}"
+                       th:placeholder="${config.configDesc}" />
+                <small class="form-text text-muted">配置键：<code th:text="${config.configKey}"></code></small>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> &nbsp;保存标识配置
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 告警阈值配置 -->
+        <div class="card card-warning">
+          <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-bell"></i> &nbsp;告警阈值配置（修改后立即生效，无需重启服务）</h3>
+          </div>
+          <form th:action="@{'/systemConfig/save'}" method="post">
+            <div class="card-body">
+              <div th:each="config : ${configs}"
+                   th:if="${config.configKey == 'cpuWarnVal' or config.configKey == 'memWarnVal' or config.configKey == 'diskWarnVal'}"
+                   class="form-group">
+                <label th:for="${config.configKey}">
+                  <i class="fas fa-tachometer-alt"></i>
+                  <span th:text="${config.configDesc}">配置项</span>
+                </label>
+                <div class="input-group">
+                  <input type="number" min="1" max="100" step="1" class="form-control"
+                         th:name="configValue"
+                         th:value="${config.configValue}"
+                         th:id="${config.configKey}"
+                         th:placeholder="${config.configDesc}" />
+                  <div class="input-group-append">
+                    <span class="input-group-text">%</span>
+                  </div>
+                </div>
+                <input type="hidden" th:name="id" th:value="${config.id}" />
+                <small class="form-text text-muted">
+                  配置键：<code th:text="${config.configKey}"></code>
+                  &nbsp;取值范围 1-100，超出阈值触发邮件/Webhook 告警
+                </small>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-warning">
+                <i class="fas fa-save"></i> &nbsp;保存阈值配置
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="callout callout-info">
+          <h5><i class="fas fa-info"></i> 使用说明</h5>
+          <ul>
+            <li><b>系统标识</b>：修改后 <b>刷新页面</b> 即可生效，无需重启服务</li>
+            <li><b>告警阈值</b>：保存后立即生效（CPU、内存告警阈值会实时覆盖配置文件中的默认值）</li>
+            <li><b>磁盘告警阈值</b>：用于显示阈值参考，需要客户端 Agent 配合上报磁盘使用率</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div th:replace="common/footer.html"></div>
+</div>
+
+<!-- jQuery -->
+<script th:src="@{'/static/AdminLTE/plugins/jquery/jquery.min.js'}"></script>
+<!-- Bootstrap 4 -->
+<script th:src="@{'/static/AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js'}"></script>
+<!-- AdminLTE App -->
+<script th:src="@{'/static/AdminLTE/dist/js/adminlte.min.js'}"></script>
+</body>
+</html>

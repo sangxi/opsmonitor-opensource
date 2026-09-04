@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<base href="/"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>OpsMonitor运维监控系统</title>
+<link type="text/css" rel="stylesheet" href="/opsmonitor/static/logincss/components.css" />
+<link type="text/css" rel="stylesheet" href="/opsmonitor/static/logincss/fix.css" />
+<link type="text/css" rel="stylesheet" href="/opsmonitor/static/logincss/suri-bootstrap.css" />
+<link type="text/css" rel="stylesheet" href="/opsmonitor/static/logincss/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="/opsmonitor/static/logincss/font-awesome.min.css" />
+<link type="text/css" rel="stylesheet" href="/opsmonitor/static/logincss/ionicons.min.css" />
+<link type="text/css" rel="stylesheet" href="/opsmonitor/static/logincss/atmosfero.css" />
+
+<link rel="shortcut icon" type="image/x-icon" href="/opsmonitor/static/logincss/favicon.png"/>
+
+<style>
+/* =========================================================
+ * OpsMonitor 登录页 - 现代柔和紫粉渐变风格
+ * 设计语言：浅色为主、柔和渐变、圆角卡片、毛玻璃质感
+ * 配色：
+ *   主色    #8b5cf6（紫罗兰）   #a78bfa（浅紫）
+ *   辅色    #ec4899（粉红）     #f472b6（浅粉）
+ *   文字    #1f2937（深灰）     #6b7280（中灰）
+ *   背景    渐变 #fdf2f8 → #faf5ff → #ede9fe（极浅粉→极浅紫）
+ * ========================================================= */
+
+* { box-sizing: border-box; }
+
+body.login-page {
+    background:
+        radial-gradient(circle at 15% 20%, rgba(236, 72, 153, 0.18) 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(167, 139, 250, 0.08) 0%, transparent 60%),
+        linear-gradient(135deg, #fdf2f8 0%, #faf5ff 50%, #ede9fe 100%) !important;
+    min-height: 100vh !important;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", Roboto, Helvetica, Arial, sans-serif;
+    color: #1f2937;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 装饰光斑（柔焦圆球） */
+body.login-page::before,
+body.login-page::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+}
+body.login-page::before {
+    top: -120px; left: -120px;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(244, 114, 182, 0.35) 0%, transparent 70%);
+    animation: opsFloat1 12s ease-in-out infinite;
+}
+body.login-page::after {
+    bottom: -150px; right: -150px;
+    width: 420px; height: 420px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.32) 0%, transparent 70%);
+    animation: opsFloat2 15s ease-in-out infinite;
+}
+
+@keyframes opsFloat1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(40px, 30px) scale(1.1); }
+}
+@keyframes opsFloat2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-30px, -40px) scale(1.15); }
+}
+
+/* 居中容器 */
+.login-page .login-box {
+    position: relative;
+    z-index: 1;
+    width: 420px;
+    max-width: calc(100% - 32px);
+    margin: 0 auto;
+    padding-top: 8vh;
+}
+
+/* 顶部品牌区（参考图风格：图标 + 标题 + 副标题） */
+.login-page .login-brand {
+    text-align: center;
+    margin-bottom: 22px;
+}
+.login-page .login-brand .brand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    box-shadow:
+        0 8px 24px rgba(139, 92, 246, 0.35),
+        0 0 0 6px rgba(255, 255, 255, 0.6);
+    margin-bottom: 14px;
+}
+.login-page .login-brand .brand-icon i {
+    color: #fff;
+    font-size: 28px;
+}
+.login-page .login-brand .brand-icon img {
+    width: 36px;
+    height: 36px;
+    filter: brightness(0) invert(1);
+}
+.login-page .login-brand h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 6px;
+    letter-spacing: 0.5px;
+}
+.login-page .login-brand .subtitle {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+/* 白色卡片（毛玻璃） */
+.login-page .login-box .login-box-content {
+    background: rgba(255, 255, 255, 0.78) !important;
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 22px;
+    box-shadow:
+        0 20px 50px rgba(139, 92, 246, 0.15),
+        0 4px 12px rgba(236, 72, 153, 0.08),
+        0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+    overflow: hidden;
+    padding: 6px 0;
+}
+
+/* 移除原 dark 风格的 login-logo / login-box-body 双层结构 */
+.login-page .login-box .login-logo { display: none; }
+.login-page .login-box .login-box-body {
+    background: transparent !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 18px 32px 28px !important;
+    box-shadow: none !important;
+}
+
+.login-page .login-box .login-box-msg {
+    color: #1f2937 !important;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    text-align: center;
+    margin: 0 0 22px;
+    position: relative;
+}
+.login-page .login-box .login-box-msg::after {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%);
+    margin: 8px auto 0;
+}
+
+/* 输入框（参考图风格：圆角、浅底、左侧图标） */
+.login-page .login-box .form-group { margin-bottom: 16px; }
+.login-page .login-box .form-group.has-icon { position: relative; }
+.login-page .login-box .form-group.has-icon .input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a78bfa;
+    font-size: 15px;
+    pointer-events: none;
+    z-index: 2;
+}
+.login-page .login-box .form-group.has-icon .form-control {
+    padding-left: 44px !important;
+}
+
+.login-page .login-box .form-control {
+    border-radius: 12px !important;
+    border: 1.5px solid #e9d5ff !important;
+    padding: 12px 16px !important;
+    font-size: 14px;
+    height: 46px;
+    background: #faf5ff !important;
+    color: #1f2937 !important;
+    transition: all 0.25s ease;
+    box-shadow: none !important;
+}
+.login-page .login-box .form-control::placeholder { color: #b8a4d4; }
+.login-page .login-box .form-control:focus {
+    border-color: #8b5cf6 !important;
+    background: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12) !important;
+    outline: none;
+}
+
+/* 验证码分组（输入框 + 图片并排） */
+.login-page .login-box .code-row { display: flex; gap: 10px; }
+.login-page .login-box .code-row .form-group { flex: 1; margin-bottom: 16px; }
+.login-page .login-box .code-img-wrap {
+    flex: 0 0 110px;
+    height: 46px;
+    border-radius: 12px;
+    border: 1.5px solid #e9d5ff;
+    background: #faf5ff;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.login-page .login-box .code-img-wrap:hover {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12);
+}
+.login-page .login-box .code-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+.login-page .login-box .code-refresh-tip {
+    font-size: 12px;
+    color: #8b7ba8;
+    margin: -10px 0 14px;
+    text-align: right;
+    letter-spacing: 0.5px;
+}
+.login-page .login-box .code-refresh-tip i { margin-right: 4px; color: #a78bfa; }
+
+/* 登录按钮（参考图渐变风格） */
+.login-page .login-box .btn-primary {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 12px !important;
+    font-weight: 600 !important;
+    font-size: 15px;
+    letter-spacing: 4px;
+    color: #ffffff !important;
+    transition: all 0.3s ease;
+    box-shadow:
+        0 6px 18px rgba(139, 92, 246, 0.4),
+        0 2px 6px rgba(236, 72, 153, 0.25);
+    height: 46px;
+    cursor: pointer;
+}
+.login-page .login-box .btn-primary:hover {
+    background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%) !important;
+    box-shadow:
+        0 10px 24px rgba(139, 92, 246, 0.5),
+        0 4px 10px rgba(236, 72, 153, 0.3);
+    transform: translateY(-1px);
+}
+.login-page .login-box .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(139, 92, 246, 0.35);
+}
+
+/* 错误提示 */
+.login-page .login-box .form-group[th\\:text] {
+    color: #dc2626;
+    font-weight: 500;
+    text-align: center;
+    font-size: 13px;
+    margin: -4px 0 8px;
+    min-height: 18px;
+}
+
+/* 底部版权（参考图风格：细字、淡色） */
+.login-page > .login-footer {
+    text-align: center;
+    margin-top: 22px;
+    position: relative;
+    z-index: 1;
+}
+.login-page > .login-footer a {
+    color: #8b7ba8 !important;
+    font-size: 12px;
+    text-decoration: none;
+    letter-spacing: 0.8px;
+    transition: color 0.2s;
+}
+.login-page > .login-footer a:hover { color: #6b46c1 !important; }
+
+/* 移动端适配 */
+@media (max-width: 480px) {
+    .login-page .login-box { padding-top: 4vh; }
+    .login-page .login-box .login-box-body { padding: 18px 22px 24px !important; }
+    .login-page .login-brand h1 { font-size: 19px; }
+    .login-page .login-brand .brand-icon { width: 56px; height: 56px; }
+}
+</style>
+
+</head>
+<body class="login-page">
+
+<div class="login-box">
+
+    <!-- 顶部品牌区（参考参考图设计：图标 + 标题 + 副标题） -->
+    <div class="login-brand">
+        <div class="brand-icon">
+            <img src="/opsmonitor/static/logincss/logo.png" alt="OpsMonitor"/>
+        </div>
+        <h1>OpsMonitor运维监控系统</h1>
+        <p class="subtitle">实时监控 · 全栈洞察 · 智能告警</p>
+    </div>
+
+    <!-- 白色卡片 -->
+    <div class="login-box-content">
+        <div class="login-box-body">
+            <p class="login-box-msg">账号登录</p>
+
+            <form id="form1" action="/opsmonitor/login/login"  method="post" onsubmit="setMd5Pwd()" class="form-horizontal">
+
+                <div class="form-group has-icon">
+                    <i class="fa fa-user input-icon"></i>
+                    <input id="userName" name="userName" placeholder="请输入账号" maxlength="50" autocomplete="off" class="validate[required] form-control" type="text">
+                </div>
+
+                <div class="form-group has-icon">
+                    <i class="fa fa-lock input-icon"></i>
+                    <input placeholder='请输入密码' id="passwd" name="passwd" maxlength="20" class="validate[required] form-control" autocomplete="off" type="password">
+                    <input type="hidden" id="md5pwd" name="md5pwd" value=""/>
+                </div>
+
+                <div class="code-row">
+                    <div class="form-group has-icon">
+                        <i class="fa fa-shield input-icon"></i>
+                        <input placeholder='请输入验证码' id="code" name="code" maxlength="6" class="validate[required] form-control" autocomplete="off" type="text">
+                    </div>
+                    <div class="code-img-wrap" onclick="refreshCode()" title="点击刷新验证码">
+                        <img id="codeImg" src="/opsmonitor/code/generate"/>
+                    </div>
+                </div>
+                <div class="code-refresh-tip"><i class="fa fa-refresh"></i>看不清？点击图片换一张</div>
+
+                <div class="form-group"  style="color:#dc2626;font-weight:500;text-align: center;font-size:13px;margin:-4px 0 8px;"></div>
+
+                <div class="form-group">
+                    <div class="col-sm-12" style="padding-left: 0; padding-right: 0;">
+                        <input value="登 录" class="btn btn-primary btn-block" type="submit">
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 底部版权 -->
+<div class="login-footer">
+    <a target="_blank" href='#'>©2026 OpsMonitor. All Rights Reserved.</a>
+</div>
+
+    <link rel="stylesheet" href="/opsmonitor/static/js/jQuery/validationEngine.jquery.css" type="text/css"/>
+    <script src="/opsmonitor/static/js/jQuery/jquery-3.2.0.min.js"></script>
+    <script src="/opsmonitor/static/js/jQuery/jquery.validationEngine-zh_CN.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/opsmonitor/static/js/jQuery/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="/opsmonitor/static/common/md5.js"></script>
+    <script type="text/javascript" src="/opsmonitor/static/js/login.js"></script>
+    <script type="text/javascript">
+        // 由 Thymeleaf 解析 context-path，避免硬编码导致刷新图片 404
+        var codeGenerateUrl = "\/opsmonitor\/code\/generate";
+
+        // 刷新验证码图片（带时间戳防缓存）
+        function refreshCode() {
+            var img = document.getElementById('codeImg');
+            if (img) {
+                img.src = codeGenerateUrl + '?d=' + new Date().getTime();
+            }
+            // 清空验证码输入框，避免用户输入旧验证码
+            var codeInput = document.getElementById('code');
+            if (codeInput) {
+                codeInput.value = '';
+                codeInput.focus();
+            }
+        }
+
+        // 后端通过 needRefreshCode 标志告知前端是否需要刷新验证码
+        // 任何登录失败场景（验证码错误、过期、账号密码错误、锁定）均会触发
+        window.onload = function () {
+            var needRefresh = document.getElementById('needRefreshCodeFlag');
+            if (needRefresh && needRefresh.value === 'true') {
+                // 不调用 refreshCode() 的 focus 行为，避免抢焦点
+                var img = document.getElementById('codeImg');
+                if (img) {
+                    img.src = codeGenerateUrl + '?d=' + new Date().getTime();
+                }
+                var codeInput = document.getElementById('code');
+                if (codeInput) {
+                    codeInput.value = '';
+                }
+            }
+        };
+    </script>
+    <input type="hidden" id="needRefreshCodeFlag" value="false"/>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OpsMonitor公众看板(请收藏)</title>
+  <div  th:replace="common/header.html"></div>
+  <style>
+    .dash-banner {
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99, 102, 241, 0.22) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 50% at 80% 90%, rgba(168, 85, 247, 0.18) 0%, transparent 60%),
+        linear-gradient(135deg, #0a0e27 0%, #1a1147 40%, #0f0a2e 70%, #0a0e27 100%);
+      color: #fff;
+      border-radius: 12px;
+      padding: 22px 28px;
+      margin-bottom: 22px;
+      box-shadow: 0 8px 30px rgba(10, 14, 39, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    .dash-banner::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+    .dash-banner .brand-name { font-size: 22px; font-weight: 600; }
+    .dash-banner .sub-title { color: #b3b8d8; font-size: 13px; margin-top: 4px; }
+    .dash-banner .nav-link { color: #c7cbef; font-size: 13px; }
+    .dash-banner .nav-link:hover { color: #fff; text-decoration: none; }
+
+    .dash-stat {
+      border-radius: 10px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+      transition: transform .2s ease, box-shadow .2s ease;
+      border: none;
+    }
+    .dash-stat:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+    }
+    .dash-stat .inner h3 { font-weight: 700; letter-spacing: 1px; }
+    .dash-stat .icon {
+      opacity: 0.18;
+      font-size: 70px;
+      transition: opacity .2s ease;
+    }
+    .dash-stat:hover .icon { opacity: 0.28; }
+    .dash-card {
+      border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(2,6,23,.4);
+      border: 1px solid #2b3552;
+      background: #1a2138;
+      margin-bottom: 22px;
+    }
+    .dash-card .card-header {
+      background: #202a44;
+      border-bottom: 1px solid #2b3552;
+      font-weight: 600;
+      color: #fff;
+    }
+  </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+
+<div class="wrapper">
+
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper" style="font-size: 0.9rem;margin-left: 10px">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="dash-banner d-flex align-items-center justify-content-between">
+          <div>
+            <a href="#" target="_blank" class="d-flex align-items-center" style="color:#fff;">
+              <img th:src="@{'/static/logincss/logo.png'}" style="height:34px;width:34px;opacity:.95;border-radius:9px" class="brand-image elevation-3">
+              <span class="brand-name ml-2" th:text="${systemName}">OpsMonitor</span>
+            </a>
+            <div class="sub-title">实时监控概要 · 数据每分钟自动更新</div>
+          </div>
+          <div class="d-none d-md-block">
+            <a class="nav-link" href="/opsmonitor/dash/main?dashView=1">监控概要</a>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-info dash-stat">
+              <div class="inner">
+                <h3 th:text="${totalSizeApp}"></h3>
+                <p>监控进程</p>
+              </div>
+              <div class="icon"><i class="fas fa-tasks"></i></div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning dash-stat">
+              <div class="inner">
+                <h3 th:text="${memPerSizeApp}"></h3>
+                <p>进程占用 CPU &gt; 90%</p>
+              </div>
+              <div class="icon"><i class="fas fa-fire"></i></div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-info dash-stat">
+              <div class="inner">
+                <h3 th:text="${dbInfoSize}"></h3>
+                <p>数据源</p>
+              </div>
+              <div class="icon"><i class="fas fa-database"></i></div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-info dash-stat">
+              <div class="inner">
+                <h3 th:text="${dbTableSize}"></h3>
+                <p>监控数据表数量</p>
+              </div>
+              <div class="icon"><i class="fas fa-table"></i></div>
+            </div>
+          </div>
+        </div>
+        <!-- /.row -->
+
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-info dash-stat">
+              <div class="inner">
+                <h3 th:text="${dbTableSum}"></h3>
+                <p>数据表总数据量</p>
+              </div>
+              <div class="icon"><i class="fas fa-chart-bar"></i></div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-info dash-stat">
+              <div class="inner">
+                <h3 th:text="${heathSize}"></h3>
+                <p>服务接口数量</p>
+              </div>
+              <div class="icon"><i class="fas fa-link"></i></div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-danger dash-stat">
+              <div class="inner">
+                <h3 th:text="${heatherrSize}"></h3>
+                <p>异常服务接口</p>
+              </div>
+              <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-success dash-stat">
+              <div class="inner">
+                <h3 th:text="${logSize}">0<sup style="font-size: 20px"></sup></h3>
+                <p>已产生系统日志</p>
+              </div>
+              <div class="icon"><i class="fas fa-file-alt"></i></div>
+            </div>
+          </div>
+        </div>
+        <!-- /.row -->
+
+
+        <!-- Main row -->
+        <div class="row">
+          <section class="col-lg-7 connectedSortable">
+            <div class="card dash-card" id="chartInfoList">
+
+            </div>
+          </section>
+          <section class="col-lg-5 connectedSortable ui-sortable">
+            <div class="card dash-card" id="dbTableList">
+
+            </div>
+          </section>
+        </div>
+
+
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <div th:replace="common/chart.html"></div>
+  <div th:replace="common/dashViewFooter.html"></div>
+
+</div>
+<!-- ./wrapper -->
+
+
+<script th:inline="javascript">
+
+  const data = [[${chartInfoList}]];
+
+  const chart = new G2.Chart({
+    container: 'chartInfoList',
+    forceFit: true,
+    height: 500,
+    animate: false
+  });
+  chart.source(data, {
+    percent: {
+      formatter: val => {
+      val = (val * 100) + '%';
+  return val;
+  }
+  }
+  });
+  chart.coord('theta', {
+    radius: 0.75,
+    innerRadius: 0.6
+  });
+  chart.tooltip({
+    showTitle: false,
+    itemTpl: '<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>'
+  });
+  chart.guide().html({
+    position: [ '50%', '50%' ],
+    html: '<div style="color:#b7c0d6;font-size: 14px;text-align: center;width: 10em;">监控主机<br><span style="color:#b7c0d6;font-size:20px">[[${totalSystemInfoSize}]]</span>台</div>',
+    alignX: 'middle',
+    alignY: 'middle'
+  });
+  const interval = chart.intervalStack()
+          .position('percent')
+          .color('item')
+          .label('count', {
+            formatter: (val, item) => {
+            return item.point.item + ': ' + val;
+  }
+  })
+  .tooltip('item*percent', (item, percent) => {
+    percent = percent * 100 + '%';
+  return {
+    name: item,
+    value: percent
+  };
+  })
+  .style({
+    lineWidth: 1,
+    stroke: '#fff'
+  });
+  chart.render();
+  interval.setSelected(data[0]);
+
+  const data2 = [[${dbTableList}]];
+  const chart2 = new G2.Chart({
+    container: 'dbTableList',
+    forceFit: true,
+    height: 500,
+    padding: [ 20, 40, 50, 124 ]
+  });
+  chart2.source(data2, {
+    value: {
+      min: 0,
+      nice: false,
+      alias: '条'
+    }
+  });
+  chart2.axis('tableName', {
+    label: {
+      textStyle: {
+        fill: '#b7c0d6',
+        fontSize: 12
+      }
+    },
+    tickLine: {
+      alignWithLabel: false,
+      length: 0
+    },
+    line: {
+      lineWidth: 0
+    }
+  });
+  chart2.axis('value', {
+    label: null,
+    title: {
+      offset: 30,
+      textStyle: {
+        fontSize: 12,
+        fontWeight: 300
+      }
+    }
+  });
+  chart2.legend(false);
+  chart2.coord().transpose();
+  chart2.interval().position('tableName*value').size(26)
+          .opacity(1)
+          .label('value', {
+            textStyle: {
+              fill: '#b7c0d6'
+            },
+            offset: 10
+          });
+  chart2.render();
+</script>
+</body>
+</html>

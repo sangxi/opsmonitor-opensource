@@ -1,0 +1,119 @@
+<html style="margin:0;padding:0;">
+<div style="background-color:transparent;box-sizing:border-box;font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;padding:4px;--accent:#8BC8EA;">
+  <div style="background:#F4F3EE;border:1px solid #E4E3DD;border-radius:14px;padding:18px 16px;box-sizing:border-box;">
+
+    <div style="font-size:15px;font-weight:600;color:#1A1B1C;">OpsMonitor v2.0 二开改造 · 方案总览</div>
+    <div style="font-size:12px;color:#6B7280;margin-top:3px;">基线 wgcloud v3.6.3 (Apache-2.0) · 逻辑可同源，品牌与界面完全独立 · 2026-09-03</div>
+
+    <!-- 五个工作包 -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+
+      <!-- WP1 去wgcloud化 -->
+      <div style="flex:1 1 180px;min-width:170px;background:#fff;border:1px solid #E4E3DD;border-radius:12px;padding:10px 12px;box-sizing:border-box;">
+        <div style="font-size:12px;font-weight:600;color:#1A1B1C;">① 彻底去 wgcloud 化</div>
+        <div style="font-size:12px;color:#4B5563;line-height:1.6;margin-top:6px;">
+          包名 com.wgcloud→com.opsmonitor<br>
+          启动类/日志/配置 key 全改<br>
+          库名 wgcloud→opsmonitor + 迁移脚本<br>
+          全局终扫 = 0 残留
+        </div>
+      </div>
+
+      <!-- WP2 UI现代化 -->
+      <div style="flex:1 1 180px;min-width:170px;background:#fff;border:1px solid #E4E3DD;border-radius:12px;padding:10px 12px;box-sizing:border-box;">
+        <div style="font-size:12px;font-weight:600;color:#1A1B1C;">② UI 现代化</div>
+        <div style="font-size:12px;color:#4B5563;line-height:1.6;margin-top:6px;">
+          Design Token 深色主题统一<br>
+          侧边栏/顶栏/统计卡片/表格/表单<br>
+          参考图：深色导航+彩色指标卡+环形图<br>
+          全站 30+ 模板页美化
+        </div>
+      </div>
+
+      <!-- WP3 大屏重构 -->
+      <div style="flex:1 1 180px;min-width:170px;background:#fff;border:1px solid #E4E3DD;border-radius:12px;padding:10px 12px;box-sizing:border-box;">
+        <div style="font-size:12px;font-weight:600;color:#1A1B1C;">③ 监控大屏重构</div>
+        <div style="font-size:12px;color:#4B5563;line-height:1.6;margin-top:6px;">
+          ECharts5 暗色大屏，16:9 栅格<br>
+          聚合接口一次取全量，30s 轮询<br>
+          1920/4K 自适应 + 全屏 + 无登录投屏<br>
+          12 个可视化区块
+        </div>
+      </div>
+
+      <!-- WP4 使用教程 -->
+      <div style="flex:1 1 180px;min-width:170px;background:#fff;border:1px solid #E4E3DD;border-radius:12px;padding:10px 12px;box-sizing:border-box;">
+        <div style="font-size:12px;font-weight:600;color:#1A1B1C;">④ 侧边栏「使用教程」</div>
+        <div style="font-size:12px;color:#4B5563;line-height:1.6;margin-top:6px;">
+          分系统部署：Linux/Win/macOS/Docker/宝塔/1Panel<br>
+          各系统文件挂载清单（Tab 交互页）<br>
+          help 表 + 管理端可维护 + 种子数据<br>
+          FAQ 与告警配置
+        </div>
+      </div>
+
+      <!-- WP5 功能增强 -->
+      <div style="flex:1 1 180px;min-width:170px;background:#fff;border:1px solid #E4E3DD;border-radius:12px;padding:10px 12px;box-sizing:border-box;">
+        <div style="font-size:12px;font-weight:600;color:#1A1B1C;">⑤ 功能增强</div>
+        <div style="font-size:12px;color:#4B5563;line-height:1.6;margin-top:6px;">
+          告警中心/规则/升级/多通道<br>
+          定时报表 + Excel/PDF 导出<br>
+          多用户 RBAC + 主机分组标签<br>
+          开放 REST API + 全局搜索
+        </div>
+      </div>
+    </div>
+
+    <!-- 里程碑时间轴 -->
+    <div style="margin-top:16px;">
+      <div style="font-size:13px;font-weight:600;color:#1A1B1C;margin-bottom:8px;">开发里程碑（约 8.5 周）</div>
+      <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap;position:relative;">
+        <div style="flex:1 1 0;min-width:120px;padding:0 6px;box-sizing:border-box;position:relative;text-align:center;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#9EACEA;margin:0 auto;"></div>
+          <div style="font-size:11px;font-weight:600;color:#1A1B1C;margin-top:5px;">M0 冻结</div>
+          <div style="font-size:10px;color:#6B7280;line-height:1.4;">基线+SQL备份 0.5周</div>
+        </div>
+        <div style="flex:1 1 0;min-width:120px;padding:0 6px;box-sizing:border-box;position:relative;text-align:center;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#8BC8EA;margin:0 auto;"></div>
+          <div style="font-size:11px;font-weight:600;color:#1A1B1C;margin-top:5px;">M1 去wgcloud</div>
+          <div style="font-size:10px;color:#6B7280;line-height:1.4;">包名/配置/SQL/文档 1周</div>
+        </div>
+        <div style="flex:1 1 0;min-width:120px;padding:0 6px;box-sizing:border-box;position:relative;text-align:center;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#8BC8EA;margin:0 auto;"></div>
+          <div style="font-size:11px;font-weight:600;color:#1A1B1C;margin-top:5px;">M2 UI现代化</div>
+          <div style="font-size:10px;color:#6B7280;line-height:1.4;">Token+组件+全站 1.5周</div>
+        </div>
+        <div style="flex:1 1 0;min-width:120px;padding:0 6px;box-sizing:border-box;position:relative;text-align:center;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#8BC8EA;margin:0 auto;"></div>
+          <div style="font-size:11px;font-weight:600;color:#1A1B1C;margin-top:5px;">M3 大屏重构</div>
+          <div style="font-size:10px;color:#6B7280;line-height:1.4;">聚合接口+ECharts大屏 1.5周</div>
+        </div>
+        <div style="flex:1 1 0;min-width:120px;padding:0 6px;box-sizing:border-box;position:relative;text-align:center;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#8BC8EA;margin:0 auto;"></div>
+          <div style="font-size:11px;font-weight:600;color:#1A1B1C;margin-top:5px;">M4 使用教程</div>
+          <div style="font-size:10px;color:#6B7280;line-height:1.4;">help表+教程页+种子 1周</div>
+        </div>
+        <div style="flex:1 1 0;min-width:120px;padding:0 6px;box-sizing:border-box;position:relative;text-align:center;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#94D8C3;margin:0 auto;"></div>
+          <div style="font-size:11px;font-weight:600;color:#1A1B1C;margin-top:5px;">M5 功能增强</div>
+          <div style="font-size:10px;color:#6B7280;line-height:1.4;">告警/报表/RBAC/API 2周</div>
+        </div>
+        <div style="flex:1 1 0;min-width:120px;padding:0 6px;box-sizing:border-box;position:relative;text-align:center;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#52C41A;margin:0 auto;"></div>
+          <div style="font-size:11px;font-weight:600;color:#1A1B1C;margin-top:5px;">M6 验收</div>
+          <div style="font-size:10px;color:#6B7280;line-height:1.4;">回归+性能+终扫 1周</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 架构小结 -->
+    <div style="margin-top:14px;background:#fff;border:1px solid #E4E3DD;border-radius:12px;padding:10px 12px;box-sizing:border-box;">
+      <div style="font-size:12px;font-weight:600;color:#1A1B1C;">架构保持不变：</div>
+      <div style="font-size:12px;color:#4B5563;line-height:1.7;margin-top:4px;">
+        Server（Spring Boot 2.6.6 + JDK8，端口9999）⇄ Agent（OSHI 跨平台采集，每分钟上报）⇄ 前端（Thymeleaf + AdminLTE3 + 自研深色主题 + ECharts5）
+      </div>
+    </div>
+
+  </div>
+</div>
+</html>
